@@ -1,0 +1,7 @@
+import gritter.Engagement
+
+model {
+	Engagement engagement
+}
+
+json g.render(engagement, [resolveTemplate: false])

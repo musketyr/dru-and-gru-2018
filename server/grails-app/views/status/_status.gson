@@ -1,0 +1,7 @@
+import gritter.Status
+
+model {
+	Status status
+}
+
+json g.render(status, [resolveTemplate: false])

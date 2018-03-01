@@ -1,0 +1,8 @@
+import gritter.Engagement
+
+model {
+	Iterable<Engagement> engagementList
+}
+
+json tmpl.engagement(engagementList ?: [])
+

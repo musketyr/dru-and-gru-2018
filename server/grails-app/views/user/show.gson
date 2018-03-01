@@ -1,0 +1,7 @@
+import gritter.User
+
+model {
+	User user
+}
+
+json tmpl.user(user)
