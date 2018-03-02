@@ -1,3 +1,4 @@
+import gritter.Engagement
 import gritter.Status
 
 model {
@@ -7,7 +8,7 @@ model {
 json g.render(status, [excludes: ['user', 'engagements']]) {
 	user g.render(status.user)
     engagementsCount status.engagements.size()
-    engagements g.render(status.engagements, [excludes: ['status', 'user']]) {
-        user g.render(status.user)
+    engagements g.render(status.engagements, [excludes: ['status', 'user']]) { Engagement engagement ->
+        user g.render(engagement.user)
     }
 }

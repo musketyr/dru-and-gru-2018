@@ -6,8 +6,6 @@ class Engagement {
     Status status
     Date dateCreated
 
-    static belongsTo = [status: Status]
-
     static constraints = {
         status validator: { val, obj ->
             val.user != obj.user
@@ -16,5 +14,10 @@ class Engagement {
 
     static mapping = {
         user column: '`user`'
+    }
+
+    @Override
+    String toString() {
+        return "$user liked status '$status'"
     }
 }

@@ -11,4 +11,9 @@ class Status {
     static constraints = {
         text size: 1..255
     }
+
+    @Override
+    String toString() {
+        return "$user.username: $text"
+    }
 }

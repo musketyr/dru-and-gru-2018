@@ -21,6 +21,7 @@ apply plugin:"org.grails.plugins.views-json"
 
 repositories {
     mavenLocal()
+    jcenter()
     maven { url "https://repo.grails.org/grails/core" }
 }
 
@@ -50,9 +51,15 @@ dependencies {
     runtime "org.glassfish.web:el-impl:2.1.2-b03"
     runtime "com.h2database:h2"
     runtime "org.apache.tomcat:tomcat-jdbc"
+
     testCompile "org.grails:grails-gorm-testing-support"
     testCompile "org.grails:grails-datastore-rest-client"
     testCompile "org.grails:grails-web-testing-support"
+
+    String druVersion = '0.2.1'
+    testCompile "com.agorapulse:dru:$druVersion"
+    testCompile "com.agorapulse:dru-client-gorm:$druVersion"
+    testCompile "com.agorapulse:dru-parser-json:$druVersion"
 }
 
 bootRun {

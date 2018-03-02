@@ -7,4 +7,9 @@ class User {
     static constraints = {
         username size: 1..63
     }
+
+    @Override
+    String toString() {
+        return username
+    }
 }
