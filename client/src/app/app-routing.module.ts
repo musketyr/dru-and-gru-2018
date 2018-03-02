@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
 import {RouterModule,Routes} from '@angular/router';
 import {IndexComponent} from "./index/index.component";
+import {StatusComponent} from "./status/status.component";
 
 const routes: Routes = [
-  {path: '', redirectTo: 'index', pathMatch: 'full'},
-  {path: 'index', component: IndexComponent}
+  {path: '', redirectTo: 'states', pathMatch: 'full'},
+  {path: 'index', component: IndexComponent},
+  {path: 'states', component: StatusComponent},
 ];
 
 @NgModule({

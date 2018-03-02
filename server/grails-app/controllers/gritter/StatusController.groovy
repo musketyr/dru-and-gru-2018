@@ -6,9 +6,15 @@ import grails.converters.*
 
 class StatusController {
 
-	static responseFormats = ['json']
-	
+    static responseFormats = ['json']
+
     def index() {
-        [states: Status.list(params)]
+        Map queryParameters = [
+                max: params.int('max', 25),
+                offset: params.int('offset', 0),
+                sort: 'dateCreated',
+                order: 'desc'
+        ]
+        [states: Status.list(queryParameters)]
     }
 }

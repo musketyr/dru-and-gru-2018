@@ -4,4 +4,10 @@ model {
 	Status status
 }
 
-json g.render(status, [resolveTemplate: false])
+json g.render(status, [excludes: ['user', 'engagements']]) {
+	user g.render(status.user)
+    engagementsCount status.engagements.size()
+    engagements g.render(status.engagements, [excludes: ['status', 'user']]) {
+        user g.render(status.user)
+    }
+}

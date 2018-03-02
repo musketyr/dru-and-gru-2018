@@ -6,7 +6,10 @@ class BootStrap {
 
     def init = { servletContext ->
         if (Environment.isDevelopmentMode()) {
+            // http://scotgov.maps.arcgis.com/apps/webappviewer/index.html?id=2de764a9303848ffb9a4cac0bd0b1aab
+
             List<String> names = [
+                    'John Sno',
                     'Ice Queen',
                     'The Snow Buster',
                     'Snow Destroyer',
@@ -36,8 +39,7 @@ class BootStrap {
                     'Melting snow',
                     'Melting ice',
                     'Blowing away snow',
-                    'Winter is coming',
-                    'Have you seen me',
+                    'I\'ve seen some white walkers',
             ]
 
             List<String> directionsAndLocations = [
@@ -95,7 +97,6 @@ class BootStrap {
                     'Barrhead',
                     'Grangemouth',
                     'Blantyre',
-                    'St',
                     'Kilwinning',
                     'Johnstone',
                     'Bonnyrigg',

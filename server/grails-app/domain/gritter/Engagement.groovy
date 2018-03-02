@@ -4,6 +4,7 @@ class Engagement {
 
     User user
     Status status
+    Date dateCreated
 
     static belongsTo = [status: Status]
 
