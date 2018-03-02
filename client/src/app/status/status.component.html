@@ -1,5 +1,5 @@
 <div id="states">
-    <div class="row" *ngFor="let s of states">
+    <div class="row" *ngFor="let s of statuses">
         <div class="col-8 offset-2 state">
             <strong>{{s.user.username}}</strong> <small>{{s.dateCreated | date:'yyyy-MM-dd HH:mm'}}</small> <span>&hearts; {{s.engagementsCount}}</span> <br/>
             <p>{{s.text}}</p>

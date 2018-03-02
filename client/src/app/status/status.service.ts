@@ -13,7 +13,7 @@ export class StatusService {
 
   constructor(private http: Http) { }
 
-  getStates(): Observable<any> {
+  getStatuses(): Observable<any> {
       return this.http.get(environment.serverUrl + 'status').map((res: Response) => res.json());
   }
 }

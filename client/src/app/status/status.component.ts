@@ -9,11 +9,11 @@ import {OnInit} from '@angular/core';
 })
 export class StatusComponent implements OnInit {
 
-  states: any;
+  statuses: any;
 
   constructor(private statusService: StatusService) { }
 
   ngOnInit(): void {
-    this.statusService.getStates().subscribe(res => this.states = res);
+    this.statusService.getStatuses().subscribe(res => this.statuses = res);
   }
 }

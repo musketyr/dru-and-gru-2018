@@ -12,7 +12,7 @@ class StatusController {
         Map queryParameters = [
                 max: params.int('max', 25),
                 offset: params.int('offset', 0),
-                sort: 'dateCreated',
+                sort: 'created',
                 order: 'desc'
         ]
         [states: Status.list(queryParameters)]

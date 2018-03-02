@@ -4,9 +4,9 @@ import {IndexComponent} from "./index/index.component";
 import {StatusComponent} from "./status/status.component";
 
 const routes: Routes = [
-  {path: '', redirectTo: 'states', pathMatch: 'full'},
+  {path: '', redirectTo: 'statuses', pathMatch: 'full'},
   {path: 'index', component: IndexComponent},
-  {path: 'states', component: StatusComponent},
+  {path: 'statuses', component: StatusComponent},
 ];
 
 @NgModule({

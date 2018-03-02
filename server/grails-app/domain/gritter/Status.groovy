@@ -2,7 +2,7 @@ package gritter
 
 class Status {
 
-    Date dateCreated
+    Date created = new Date()
     User user
     String text
 

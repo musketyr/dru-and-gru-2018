@@ -120,7 +120,7 @@ class BootStrap {
                 Status status = new Status(
                         user: users[random.nextInt(users.size())],
                         text: "${activities[random.nextInt(activities.size())]} ${directionsAndLocations[random.nextInt(directionsAndLocations.size())]} ${places[random.nextInt(places.size())]}",
-                        dateCreated: new Date(System.currentTimeMillis() - random.nextInt())
+                        created: new Date(System.currentTimeMillis() - (10L * Math.abs(random.nextInt())))
                 ).save(failOnError: true)
 
                 random.nextInt(users.size()).times {

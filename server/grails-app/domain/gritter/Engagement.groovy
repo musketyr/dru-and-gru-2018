@@ -4,7 +4,7 @@ class Engagement {
 
     User user
     Status status
-    Date dateCreated
+    Date created = new Date()
 
     static constraints = {
         status validator: { val, obj ->
