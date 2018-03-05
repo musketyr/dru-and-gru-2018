@@ -7,8 +7,10 @@ model {
 
 json g.render(status, [excludes: ['user', 'engagements']]) {
 	user g.render(status.user)
-    engagementsCount status.engagements.size()
-    engagements g.render(status.engagements, [excludes: ['status', 'user']]) { Engagement engagement ->
-        user g.render(engagement.user)
+    engagementsCount status.engagements?.size() ?: 1
+    if (status.engagements) {
+        engagements g.render(status.engagements, [excludes: ['status', 'user']]) { Engagement engagement ->
+            user g.render(engagement.user)
+        }
     }
 }

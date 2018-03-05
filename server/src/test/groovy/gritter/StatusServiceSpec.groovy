@@ -1,6 +1,7 @@
 package gritter
 
 import com.agorapulse.dru.Dru
+import com.agorapulse.dru.PreparedDataSet
 import grails.testing.gorm.DataTest
 import grails.testing.services.ServiceUnitTest
 import org.junit.Rule
@@ -13,7 +14,7 @@ import java.time.LocalDateTime
 
 class StatusServiceSpec extends Specification implements ServiceUnitTest<StatusService>, DataTest {
 
-    @Rule Dru dru = Dru.plan {
+    static PreparedDataSet statuses = Dru.prepare {
         from 'statuses.json', {
             map {
                 to Status, {
@@ -21,6 +22,10 @@ class StatusServiceSpec extends Specification implements ServiceUnitTest<StatusS
                 }
             }
         }
+    }
+
+    @Rule Dru dru = Dru.plan {
+        include statuses
     }
 
     void setup() {
@@ -44,7 +49,7 @@ class StatusServiceSpec extends Specification implements ServiceUnitTest<StatusS
             first.engagements.size() == 3
     }
 
-    void 'get top states'() {
+    void 'get top statuses'() {
         given:
             DateFormat format = new SimpleDateFormat('yyyy-MM-dd')
         when:
