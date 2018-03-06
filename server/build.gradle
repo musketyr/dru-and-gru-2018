@@ -63,6 +63,7 @@ dependencies {
     testCompile "com.agorapulse:dru-parser-json:$druVersion"
 
     String gruVersion = '0.3.1'
+    testCompile "com.agorapulse:gru-http:$gruVersion"
     testCompile "com.agorapulse:gru-grails:$gruVersion"
 }
 

@@ -5,7 +5,7 @@ import grails.util.Environment
 class BootStrap {
 
     def init = { servletContext ->
-        if (Environment.isDevelopmentMode()) {
+        if (Environment.current in [Environment.TEST, Environment.DEVELOPMENT]) {
             // http://scotgov.maps.arcgis.com/apps/webappviewer/index.html?id=2de764a9303848ffb9a4cac0bd0b1aab
 
             List<String> names = [
