@@ -16,6 +16,7 @@ class StatusControllerSpec extends Specification implements ControllerUnitTest<S
 
     @Rule Gru gru = Gru.equip(Grails.steal(this)).prepare {
         include UrlMappings
+        include UserInterceptor
     }
 
     void setup() {
@@ -32,6 +33,21 @@ class StatusControllerSpec extends Specification implements ControllerUnitTest<S
 
                 expect {
                     json 'statuses.json'
+                }
+            }
+    }
+
+    void 'create status'() {
+        expect:
+            gru.test {
+                post '/status', {
+                    headers User: 'John Sno'
+                    json 'newStatusRequest.json'
+
+                }
+                expect {
+                    status CREATED
+                    json 'newStatusResponse.json'
                 }
             }
     }

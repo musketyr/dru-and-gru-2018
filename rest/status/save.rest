@@ -1,0 +1,10 @@
+POST {{host}}/status
+Accept: application/json
+Content-Type: application/json
+User: John Sno
+
+{
+    "text": "No Snow here, let's take a long nap"
+}
+
+###

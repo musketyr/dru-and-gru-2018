@@ -303,7 +303,8 @@
       "id": 1,
       "username": "John Sno"
     },
-    "engagementsCount": 1
+    "engagementsCount": 0,
+    "engagements": []
   },
   {
     "id": 13,

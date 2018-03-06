@@ -1,8 +1,7 @@
 package gritter
 
-
-import grails.rest.*
-import grails.converters.*
+import static org.springframework.http.HttpStatus.CREATED
+import static org.springframework.http.HttpStatus.UNAUTHORIZED
 
 class StatusController {
 
@@ -17,4 +16,30 @@ class StatusController {
         ]
         [states: Status.list(queryParameters)]
     }
+
+    def save(Status status) {
+        User user = currentUser
+
+        if (!user) {
+            render status: UNAUTHORIZED
+            return
+        }
+
+        status.user = user
+        status.validate()
+
+        if (status.hasErrors()) {
+            respond status.errors
+            return
+        }
+
+        status.save flush: true
+
+        respond status, [status: CREATED, view: 'show']
+    }
+
+    private User getCurrentUser() {
+        request.getAttribute('user') as User
+    }
+
 }
