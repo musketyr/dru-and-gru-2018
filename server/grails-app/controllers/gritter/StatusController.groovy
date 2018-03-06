@@ -11,10 +11,10 @@ class StatusController {
         Map queryParameters = [
                 max: params.int('max', 25),
                 offset: params.int('offset', 0),
-                sort: 'created',
-                order: 'desc'
+                sort: params.sort ?: 'created',
+                order: params.order ?: 'desc'
         ]
-        [states: Status.list(queryParameters)]
+        [statuses: Status.list(queryParameters)]
     }
 
     def save(Status status) {

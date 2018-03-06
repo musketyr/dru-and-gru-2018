@@ -14,14 +14,36 @@ class StatusControllerSpec extends Specification implements ControllerUnitTest<S
         include StatusServiceSpec.statuses
     }
 
+    void setup() {
+        dru.load()
+    }
+
+    void 'test index'() {
+        when:
+            params.max = 10
+            params.offset = 5
+
+            def model = controller.index()
+
+        then:
+            model
+            model.statuses
+            model.statuses.size() == 10
+
+        when:
+            def status = model.statuses.first()
+        then:
+            status
+            status.user
+            status.user.username == 'Ready Spready Go'
+            status.text == 'Grooming snow close to Kirkintilloch'
+    }
+
     @Rule Gru gru = Gru.equip(Grails.steal(this)).prepare {
         include UrlMappings
         include UserInterceptor
     }
 
-    void setup() {
-        dru.load()
-    }
 
     void 'get statuses'() {
         expect:

@@ -4,13 +4,14 @@ import com.agorapulse.dru.Dru
 import com.agorapulse.dru.PreparedDataSet
 import grails.testing.gorm.DataTest
 import grails.testing.services.ServiceUnitTest
+import groovy.json.JsonSlurper
+import org.junit.Ignore
 import org.junit.Rule
+import spock.lang.IgnoreRest
 import spock.lang.Specification
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 class StatusServiceSpec extends Specification implements ServiceUnitTest<StatusService>, DataTest {
 
@@ -69,6 +70,42 @@ class StatusServiceSpec extends Specification implements ServiceUnitTest<StatusS
             first.text == 'Refueling before leaving Larkhall'
             first.engagements
             first.engagements.size() == 11
+    }
+
+
+
+
+    @Ignore
+    void 'load from JSON'() {
+        when:
+            List statuses = new JsonSlurper().parse(getStatusesSource())
+        then:
+            statuses
+            statuses.size() == 25
+
+        when:
+            mockDomains User, Status, Engagement
+            for (status in statuses) {
+                new Status(status).save(failOnError: true)
+            }
+        then:
+            noExceptionThrown()
+            Status.list().size() == 25
+            User.list().size() == 13
+            Engagement.list().size() == 133
+        when:
+            Status status = Status.get(117)
+        then:
+            status
+            status.user
+            status.user.username == 'John Sno'
+            status.text == 'Spreading some salt around Airdrie'
+            status.engagements
+            status.engagements.size() == 3
+    }
+
+    private InputStream getStatusesSource() {
+        StatusServiceSpec.getResourceAsStream('StatusServiceSpec/statuses.json')
     }
 
 }

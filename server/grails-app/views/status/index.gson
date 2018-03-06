@@ -1,8 +1,8 @@
 import gritter.Status
 
 model {
-	Iterable<Status> states
+	Iterable<Status> statuses
 }
 
-json tmpl.status(states ?: [])
+json tmpl.status(statuses ?: [])
 
