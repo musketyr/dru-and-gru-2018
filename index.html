@@ -505,7 +505,7 @@ the client part of the application.</p>
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
-<p>You have been hired by <a href="https://trafficscotland.org/wintergritterinfo/">Traffice Scotland</a> to finish a Grails application
+<p>You have been hired by <a href="https://trafficscotland.org/wintergritterinfo/">Traffic Scotland</a> to finish a Grails application
 which wasn&#8217;t left by a developer who was fired from the company. It&#8217;s called Gritter (Grails + Twitter) and it purpose is to
 share text statuses published by <a href="http://scotgov.maps.arcgis.com/apps/webappviewer/index.html?id=2de764a9303848ffb9a4cac0bd0b1aab">drivers of gritters</a>.</p>
 </div>
@@ -518,13 +518,133 @@ code with tests as there are currently no tests in the project.</p>
 </div>
 </blockquote>
 </div>
+<div class="sect3">
+<h4 id="_gru_http_testing">Gru HTTP Testing</h4>
+<div class="paragraph">
+<p>Gru provides test support for any HTTP backend, not just Grails. We can use <a href="https://agorapulse.github.io/gru/#_http">Gru HTTP</a> client
+inside Grails integration test easily with following setup</p>
+</div>
+<div class="listingblock">
+<div class="title">Integration Test Example</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">package gritter
+
+import com.agorapulse.gru.Gru
+import com.agorapulse.gru.http.Http
+import grails.testing.mixin.integration.Integration
+import grails.transaction.Rollback
+import org.junit.Rule
+import org.springframework.beans.factory.annotation.Value
+import spock.lang.Specification
+
+@Integration                                                                    <i class="conum" data-value="1"></i><b>(1)</b>
+@Rollback
+class StatusControllerIntegrationSpec extends Specification  {
+
+    @Value('${local.server.port}') Integer serverPort                           <i class="conum" data-value="2"></i><b>(2)</b>
+
+    @Rule Gru&lt;Http&gt; gru = Gru.equip(Http.steal(this))                           <i class="conum" data-value="3"></i><b>(3)</b>
+
+    void setup() {
+        final String serverUrl = "http://localhost:${serverPort}"
+        gru.prepare {
+            baseUri serverUrl                                                   <i class="conum" data-value="4"></i><b>(4)</b>
+        }
+    }
+
+    void 'create new taks'() {
+        expect:
+        gru.test {                                                              <i class="conum" data-value="5"></i><b>(5)</b>
+                post '/task', {
+                    headers Authentication: 'Bearer TeddyTheBear'               <i class="conum" data-value="6"></i><b>(6)</b>
+                    json inline('{ "text" : "try Gru" }')                       <i class="conum" data-value="7"></i><b>(7)</b>
+                }
+                expect {
+                    status CREATED                                              <i class="conum" data-value="8"></i><b>(8)</b>
+                    json 'newTaskResponse.json'                                 <i class="conum" data-value="9"></i><b>(9)</b>
+                }
+            }
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Running integration tests requires <code>@Integration</code> annotation to be applied on the class and the file be located under <code>src/integration-test</code> folder</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Application in integration test environment runs on random port which can be injected into the test</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Creates new <code>Gru</code> rule with <code>Http</code> client</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Sets the base URL to the address of the current application under test</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Starts Gru test definition</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Set the headers</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>JSON payload can be specified inline or as a file name</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>Assets that the returned status is <code>CREATED</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td>Reference file which is created automatically in <code>src/test/resources/**/NameOfTheSpec</code> directory from the actual payload if not present</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>See <a href="https://agorapulse.github.io/gru/#_common_interactions">Common Interaction</a> section in the documentation for more information.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The application uses primitive authentication. Just send plain username such as <code>John Sno</code> in <code>User</code> header.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Some of the properties in the reference JSON file such as timestamps may be different for each request.
+Please, read <a href="https://agorapulse.github.io/gru/#_json_response">Json Response</a> documentation to find out how to change the generated fixture to allow variable content.
+</td>
+</tr>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-25 11:29:10 CEST
+Last updated 2018-05-25 13:31:27 CEST
 </div>
 </div>
 </body>
