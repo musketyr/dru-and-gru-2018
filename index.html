@@ -442,6 +442,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_exercise_1_http_testing">Exercise 1: HTTP Testing</a></li>
 <li><a href="#_exercise_2_grails_controller_testing">Exercise 2: Grails Controller Testing</a></li>
 <li><a href="#_exercise_3_preparing_testing_data">Exercise 3: Preparing Testing Data</a></li>
+<li><a href="#_exercise_4_sharing_test_data">Exercise 4: Sharing Test Data</a></li>
 </ul>
 </li>
 </ul>
@@ -801,12 +802,57 @@ Ensure you have used every information from the JSON using <code>dru.report</cod
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_exercise_4_sharing_test_data">Exercise 4: Sharing Test Data</h3>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>While you were wandering through the code of the application you have discovered method to fetch the top statuses for
+given time period inside <code>StatusService</code>. You would like to cover this method with test but you will need the data you&#8217;ve
+already defined in <code>StatusControllerSpec</code>.</p>
+</div>
+</blockquote>
+</div>
+<div class="sect3">
+<h4 id="_prepared_data_sets">Prepared Data Sets</h4>
+<div class="paragraph">
+<p>You can easily reuse existing data set by creating a prepared data set:</p>
+</div>
+<div class="listingblock">
+<div class="title">Prepared Data Set</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">static PreparedDataSet tasks = Dru.prepare {
+    from 'tasks.json', {
+        map {
+            to Task
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Later on you can use the data set inside your test class by including it:</p>
+</div>
+<div class="listingblock">
+<div class="title">Include Prepared Data Set</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">@Rule Dru dru = Dru.plan {
+    include OtherSpec.tasks
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a <code>StatusServiceSpec</code> to test <code>StatusService</code> class and let it reuse the statuses data set declared in <code>StatusContollerSpec</code>.
+Use the loaded data to test <code>StatusService.findTopStatuses</code> method.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-25 18:34:17 CEST
+Last updated 2018-05-25 18:54:28 CEST
 </div>
 </div>
 </body>
