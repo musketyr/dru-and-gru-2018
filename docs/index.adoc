@@ -182,3 +182,40 @@ in a test which covers `index` controller method.
 TIP: You need to implement `grails.testing.gorm.DataTest` if your test wants to work with GORM entities.
 
 TIP: Ensure you have used every information from the JSON using `dru.report`. See https://agorapulse.github.io/dru/#_ignoring_properties[related section in the documentation].
+
+=== Exercise 4: Sharing Test Data
+
+____
+While you were wandering through the code of the application you have discovered method to fetch the top statuses for
+given time period inside `StatusService`. You would like to cover this method with test but you will need the data you've
+already defined in `StatusControllerSpec`.
+____
+
+==== Prepared Data Sets
+
+You can easily reuse existing data set by creating a prepared data set:
+
+[source,groovy,indent=0,options="nowrap"]
+.Prepared Data Set
+----
+static PreparedDataSet tasks = Dru.prepare {
+    from 'tasks.json', {
+        map {
+            to Task
+        }
+    }
+}
+----
+
+Later on you can use the data set inside your test class by including it:
+
+[source,groovy,indent=0,options="nowrap"]
+.Include Prepared Data Set
+----
+@Rule Dru dru = Dru.plan {
+    include OtherSpec.tasks
+}
+----
+
+Create a `StatusServiceSpec` to test `StatusService` class and let it reuse the statuses data set declared in `StatusContollerSpec`.
+Use the loaded data to test `StatusService.findTopStatuses` method.
