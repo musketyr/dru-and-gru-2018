@@ -1,0 +1,90 @@
+= Dru and Gru Workshop
+Vladimír Oraný <https://github.com/musketyr[icon:github[] @musketyr]>
+
+== Getting Started
+
+This workshop will learn you how to use https://agorapulse.github.io/dru/[Dru] for preparing test data and https://agorapulse.github.io/gru/[Gru]
+for testing HTTP backends. Although I've made the best effort to keep this workshop self-contained, some of the exercise may need further reading of the following documentation pages:
+
+ * http://docs.grails.org/latest/[Grails 3]
+ * https://agorapulse.github.io/dru/[Dru]
+ * https://agorapulse.github.io/gru/[Gru]
+
+=== Software Requirements
+
+To get started you need to have installed following:
+
+ * Java Development Kit 8
+
+Project is built using https://gradle.org/[Gradle] build tool but it's using https://docs.gradle.org/current/userguide/gradle_wrapper.html[Gradle Wrapper]
+so you are not required to install it manually nor you don't have to be afraid of version clash.
+
+You can use IDE of your choice but https://www.jetbrains.com/idea/[IntelliJ IDEA] provides so far the best
+Gradle and Groovy integration even in the free Community version and it will be used in live coding sessions during
+the workshop.
+
+=== Getting Started
+
+To get started download link:archives/gritter.zip[exercise project archive file] and unzip it. Feel free to ignore
+the client part of the application.
+
+
+=== Exercise 1
+
+image::https://s3.amazonaws.com/media-p.slid.es/uploads/36318/images/4671552/Sni%CC%81mek_obrazovky_2018-03-06_v_9.13.01.png[Gritter App]
+____
+
+You have been hired by https://trafficscotland.org/wintergritterinfo/[Traffic Scotland] to finish a Grails application
+which wasn't left by a developer who was fired from the company. It's called Gritter (Grails + Twitter) and it purpose is to
+share text statuses published by http://scotgov.maps.arcgis.com/apps/webappviewer/index.html?id=2de764a9303848ffb9a4cac0bd0b1aab[drivers of gritters].
+
+You don't want to be responsible or someone's other mess so first thing you want to do in the new job is to cover the existing
+code with tests as there are currently no tests in the project.
+
+As a first task you decided to create a integration tests which verifies that new status can be written.
+____
+
+
+==== Gru HTTP Testing
+
+Gru provides test support for any HTTP backend, not just Grails. We can use https://agorapulse.github.io/gru/#_http[Gru HTTP] client
+inside Grails integration test easily with following setup
+
+
+[source,groovy,indent=0,options="nowrap"]
+.Integration Test Example
+----
+include::../server/src/integration-test/groovy/gritter/StatusControllerIntegrationSpec.groovy[tag=header]
+
+    void 'create new taks'() {
+        expect:
+        gru.test {                                                              // <5>
+                post '/task', {
+                    headers Authentication: 'Bearer TeddyTheBear'               // <6>
+                    json inline('{ "text" : "try Gru" }')                       // <7>
+                }
+                expect {
+                    status CREATED                                              // <8>
+                    json 'newTaskResponse.json'                                 // <9>
+                }
+            }
+    }
+
+include::../server/src/integration-test/groovy/gritter/StatusControllerIntegrationSpec.groovy[tag=footer]
+----
+<1> Running integration tests requires `@Integration` annotation to be applied on the class and the file be located under `src/integration-test` folder
+<2> Application in integration test environment runs on random port which can be injected into the test
+<3> Creates new `Gru` rule with `Http` client
+<4> Sets the base URL to the address of the current application under test
+<5> Starts Gru test definition
+<6> Set the headers
+<7> JSON payload can be specified inline or as a file name
+<8> Assets that the returned status is `CREATED`
+<9> Reference file which is created automatically in `src/test/resources/**/NameOfTheSpec` directory from the actual payload if not present
+
+See https://agorapulse.github.io/gru/#_common_interactions[Common Interaction] section in the documentation for more information.
+
+IMPORTANT: The application uses primitive authentication. Just send plain username such as `John Sno` in `User` header.
+
+IMPORTANT: Some of the properties in the reference JSON file such as timestamps may be different for each request.
+Please, read https://agorapulse.github.io/gru/#_json_response[Json Response] documentation to find out how to change the generated fixture to allow variable content.

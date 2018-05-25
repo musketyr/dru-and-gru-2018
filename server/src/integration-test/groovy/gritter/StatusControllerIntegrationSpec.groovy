@@ -1,3 +1,4 @@
+// tag::header[]
 package gritter
 
 import com.agorapulse.gru.Gru
@@ -8,20 +9,21 @@ import org.junit.Rule
 import org.springframework.beans.factory.annotation.Value
 import spock.lang.Specification
 
-@Integration
+@Integration                                                                    // <1>
 @Rollback
 class StatusControllerIntegrationSpec extends Specification  {
 
-    @Value('${local.server.port}') Integer serverPort
+    @Value('${local.server.port}') Integer serverPort                           // <2>
 
-    @Rule Gru<Http> gru = Gru.equip(Http.steal(this))
+    @Rule Gru<Http> gru = Gru.equip(Http.steal(this))                           // <3>
 
     void setup() {
         final String serverUrl = "http://localhost:${serverPort}"
         gru.prepare {
-            baseUri serverUrl
+            baseUri serverUrl                                                   // <4>
         }
     }
+    // end::header[]
 
     void 'create status'() {
         expect:
@@ -38,4 +40,6 @@ class StatusControllerIntegrationSpec extends Specification  {
             }
     }
 
+    // tag::footer[]
 }
+// end::footer[]

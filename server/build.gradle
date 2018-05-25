@@ -10,7 +10,6 @@ buildscript {
     }
 }
 
-version "0.1"
 group "gritter"
 
 apply plugin:"eclipse"
@@ -57,12 +56,12 @@ dependencies {
     testCompile "org.grails:grails-web-testing-support"
     testCompile 'org.grails:views-json-testing-support:1.2.7'
 
-    String druVersion = '0.2.1'
+    String druVersion = '0.3.1'
     testCompile "com.agorapulse:dru:$druVersion"
     testCompile "com.agorapulse:dru-client-gorm:$druVersion"
     testCompile "com.agorapulse:dru-parser-json:$druVersion"
 
-    String gruVersion = '0.3.1'
+    String gruVersion = '0.4.1'
     testCompile "com.agorapulse:gru-http:$gruVersion"
     testCompile "com.agorapulse:gru-grails:$gruVersion"
 }
