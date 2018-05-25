@@ -29,7 +29,7 @@ To get started download link:archives/gritter.zip[exercise project archive file]
 the client part of the application.
 
 
-=== Exercise 1
+=== Exercise 1: HTTP Testing
 
 image::https://s3.amazonaws.com/media-p.slid.es/uploads/36318/images/4671552/Sni%CC%81mek_obrazovky_2018-03-06_v_9.13.01.png[Gritter App]
 ____
@@ -85,6 +85,7 @@ include::../server/src/integration-test/groovy/gritter/StatusControllerIntegrati
 See https://agorapulse.github.io/gru/#_common_interactions[Common Interaction] section in the documentation for more information.
 
 IMPORTANT: The application uses primitive authentication. Just send plain username such as `John Sno` in `User` header.
+The user of given username must exist (see `BootStrap.groovy`).
 
 IMPORTANT: Some of the properties in the reference JSON file such as timestamps may be different for each request.
 Please, read https://agorapulse.github.io/gru/#_json_response[Json Response] documentation to find out how to change the generated fixture to allow variable content.
