@@ -439,7 +439,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_software_requirements">Software Requirements</a></li>
 <li><a href="#_getting_started_2">Getting Started</a></li>
-<li><a href="#_exercise_1">Exercise 1</a></li>
+<li><a href="#_exercise_1_http_testing">Exercise 1: HTTP Testing</a></li>
+<li><a href="#_exercise_2_grails_controller_testing">Exercise 2: Grails Controller Testing</a></li>
+<li><a href="#_exercise_3_preparing_testing_data">Exercise 3: Preparing Testing Data</a></li>
 </ul>
 </li>
 </ul>
@@ -459,6 +461,9 @@ for testing HTTP backends. Although I&#8217;ve made the best effort to keep this
 <p><a href="http://docs.grails.org/latest/">Grails 3</a></p>
 </li>
 <li>
+<p><a href="http://spockframework.org/spock/docs/1.1/index.html">Spock</a></p>
+</li>
+<li>
 <p><a href="https://agorapulse.github.io/dru/">Dru</a></p>
 </li>
 <li>
@@ -474,7 +479,7 @@ for testing HTTP backends. Although I&#8217;ve made the best effort to keep this
 <div class="ulist">
 <ul>
 <li>
-<p>Java Development Kit 8</p>
+<p><a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Java Development Kit 8</a></p>
 </li>
 </ul>
 </div>
@@ -496,7 +501,7 @@ the client part of the application.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_exercise_1">Exercise 1</h3>
+<h3 id="_exercise_1_http_testing">Exercise 1: HTTP Testing</h3>
 <div class="imageblock">
 <div class="content">
 <img src="https://s3.amazonaws.com/media-p.slid.es/uploads/36318/images/4671552/Sni%CC%81mek_obrazovky_2018-03-06_v_9.13.01.png" alt="Gritter App">
@@ -620,6 +625,7 @@ class StatusControllerIntegrationSpec extends Specification  {
 </td>
 <td class="content">
 The application uses primitive authentication. Just send plain username such as <code>John Sno</code> in <code>User</code> header.
+The user of given username must exist (see <code>BootStrap.groovy</code>).
 </td>
 </tr>
 </table>
@@ -639,12 +645,156 @@ Please, read <a href="https://agorapulse.github.io/gru/#_json_response">Json Res
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_exercise_2_grails_controller_testing">Exercise 2: Grails Controller Testing</h3>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>You have created your first integration test but you are not happy. You were taught that integration tests are
+unnecessarily slow and you should try to write unit test whereever it is possible. Try to rewrite the create status test
+as a unit test. Keep the original test for comparison. Ensure that expected controller action is called during the test.</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Unit tests no longer reside in <code>src/integration-test/groovy</code> but they are located in general <code>src/test/groovy</code> folder.
+Every Grails&#8217;s controller test must implement <code>grails.testing.web.controllers.ControllerUnitTest</code> trait. To setup <code>Gru</code>
+with <code>Grails</code> client you should supply the <code>UrlMappings</code> describing the mapped URL and any interceptor on which the controller&#8217;s logic rely.</p>
+</div>
+<div class="listingblock">
+<div class="title">Gru Grails Setup</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">@Rule Gru gru = Gru.equip(Grails.steal(this)).prepare {
+    include UrlMappings
+    include UserInterceptor
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Use <code>executes</code> method inside Gru&#8217;s HTTP method call definition to verify which controller&#8217;s method has been executed.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_exercise_3_preparing_testing_data">Exercise 3: Preparing Testing Data</h3>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>You have finished your first Gru&#8217;s controller unit test and you want to create another one for <code>index</code> action but you
+lack the required data. It looks you should be able to use Dru to preload data for the controller test to get consistent
+responses from the controller unit test.</p>
+</div>
+</blockquote>
+</div>
+<div class="sect3">
+<h4 id="_using_dru_to_preload_data">Using Dru to Preload Data</h4>
+<div class="paragraph">
+<p>Dru allows you to map existing data such as rendered JSON back to original entities. From running application you can
+easily obtain the data in JSON format using HTTP client such as <code>cURL</code> or by simply opening the endpoint URL in the browser.</p>
+</div>
+<div class="listingblock">
+<div class="title">item.json (from Dru documentation)</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json" data-lang="json">{
+  "id": "050e4fcf-158d-4f44-9b8b-a6ba6809982e",
+  "name": "PX-41",
+  "description": "The PX-41 is a very dangerous mutator engineered in the top secret PX-Labs, located in the Arctic Circle. It is capable of turning any living things in the world into a purple, furry, indestructible, mindless, killing machine that is so dangerous that it can destroy anything in its path.",
+  "tags": [
+    "mutator",
+    "monsters",
+    "superpowers"
+  ]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once you save the JSON file in convenient location which is similar to <code>src/test/resources/package/structure/follows/NameOfTheSpec</code></p>
+</div>
+<div class="paragraph">
+<p>you are able to import the data using Dru.</p>
+</div>
+<div class="listingblock">
+<div class="title">Load Entities from JSON using Dru</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">@Rule Dru dru = Dru.plan {                                                      <i class="conum" data-value="1"></i><b>(1)</b>
+    from ('item.json') {                                                        <i class="conum" data-value="2"></i><b>(2)</b>
+        map { to Item }                                                         <i class="conum" data-value="3"></i><b>(3)</b>
+    }
+}
+
+void setup() {
+    dru.load()                                                                  <i class="conum" data-value="4"></i><b>(4)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Create new dru instance</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Load data from <code>item.json</code> (e.g. <code>src/test/resources/gritter/StatusControllerSpec/item.json</code>)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Map every element is mapped to given class <code>Item</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Loads the entities into GORM mock datastore before each test</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you run the Gritter server with command</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>./gradlew :server:bootRun</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will be able to fetch the list of statuses with cURL</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl http://localhost:8080/status &gt; statuses.json</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Save the file to convenient location and load it into your <code>StatusControllerSpec</code> using Dru. Use the loaded entities
+in a test which covers <code>index</code> controller method.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You need to implement <code>grails.testing.gorm.DataTest</code> if your test wants to work with GORM entities. If you frogot
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-25 13:31:27 CEST
+Last updated 2018-05-25 18:26:00 CEST
 </div>
 </div>
 </body>
