@@ -39,10 +39,12 @@ class StatusControllerSpec extends Specification implements ControllerUnitTest<S
             status.text == 'Grooming snow close to Kirkintilloch'
     }
 
+    // tag::gru-setup[]
     @Rule Gru gru = Gru.equip(Grails.steal(this)).prepare {
         include UrlMappings
         include UserInterceptor
     }
+    // end::gru-setup[]
 
 
     void 'get statuses'() {
@@ -64,6 +66,7 @@ class StatusControllerSpec extends Specification implements ControllerUnitTest<S
             gru.test {
                 post '/status', {
                     headers User: 'John Sno'
+                    executes controller.&save
                     json 'newStatusRequest.json'
 
                 }

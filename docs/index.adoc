@@ -7,6 +7,7 @@ This workshop will learn you how to use https://agorapulse.github.io/dru/[Dru] f
 for testing HTTP backends. Although I've made the best effort to keep this workshop self-contained, some of the exercise may need further reading of the following documentation pages:
 
  * http://docs.grails.org/latest/[Grails 3]
+ * http://spockframework.org/spock/docs/1.1/index.html[Spock]
  * https://agorapulse.github.io/dru/[Dru]
  * https://agorapulse.github.io/gru/[Gru]
 
@@ -14,7 +15,7 @@ for testing HTTP backends. Although I've made the best effort to keep this works
 
 To get started you need to have installed following:
 
- * Java Development Kit 8
+ * http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html[Java Development Kit 8]
 
 Project is built using https://gradle.org/[Gradle] build tool but it's using https://docs.gradle.org/current/userguide/gradle_wrapper.html[Gradle Wrapper]
 so you are not required to install it manually nor you don't have to be afraid of version clash.
@@ -89,3 +90,132 @@ The user of given username must exist (see `BootStrap.groovy`).
 
 IMPORTANT: Some of the properties in the reference JSON file such as timestamps may be different for each request.
 Please, read https://agorapulse.github.io/gru/#_json_response[Json Response] documentation to find out how to change the generated fixture to allow variable content.
+
+=== Exercise 2: Grails Controller Testing
+____
+You have created your first integration test but you are not happy. You were taught that integration tests are
+unnecessarily slow and you should try to write unit test whereever it is possible. Try to rewrite the create status test
+as a unit test. Keep the original test for comparison. Ensure that expected controller action is called during the test.
+____
+
+Unit tests no longer reside in `src/integration-test/groovy` but they are located in general `src/test/groovy` folder.
+Every Grails's controller test must implement `grails.testing.web.controllers.ControllerUnitTest` trait. To setup `Gru`
+with `Grails` client you should supply the `UrlMappings` describing the mapped URL and any interceptor on which the controller's logic rely.
+
+
+[source,groovy,indent=0,options="nowrap"]
+.Gru Grails Setup
+----
+include::../server/src/test/groovy/gritter/StatusControllerSpec.groovy[tag=gru-setup]
+----
+
+TIP: Use `executes` method inside Gru's HTTP method call definition to verify which controller's method has been executed.
+
+
+=== Exercise 3: Preparing Testing Data
+
+____
+You have finished your first Gru's controller unit test and you want to create another one for `index` action but you
+lack the required data. It looks you should be able to use Dru to preload data for the controller test to get consistent
+responses from the controller unit test.
+____
+
+==== Using Dru to Preload Data
+
+Dru allows you to map existing data such as rendered JSON back to original entities. From running application you can
+easily obtain the data in JSON format using HTTP client such as `cURL` or by simply opening the endpoint URL in the browser.
+
+
+[source,json,indent=0,options="nowrap"]
+.item.json (from Dru documentation)
+----
+{
+  "id": "050e4fcf-158d-4f44-9b8b-a6ba6809982e",
+  "name": "PX-41",
+  "description": "The PX-41 is a very dangerous mutator engineered in the top secret PX-Labs, located in the Arctic Circle. It is capable of turning any living things in the world into a purple, furry, indestructible, mindless, killing machine that is so dangerous that it can destroy anything in its path.",
+  "tags": [
+    "mutator",
+    "monsters",
+    "superpowers"
+  ]
+}
+----
+
+Once you save the JSON file in convenient location which is similar to `src/test/resources/package/structure/follows/NameOfTheSpec`
+
+you are able to import the data using Dru.
+
+[source,groovy,indent=0,options="nowrap"]
+.Load Entities from JSON using Dru
+----
+@Rule Dru dru = Dru.plan {                                                      // <1>
+    from ('item.json') {                                                        // <2>
+        map { to Item }                                                         // <3>
+    }
+}
+
+void setup() {
+    dru.load()                                                                  // <4>
+}
+----
+<1> Create new dru instance
+<2> Load data from `item.json` (e.g. `src/test/resources/gritter/StatusControllerSpec/item.json`)
+<3> Map every element is mapped to given class `Item`
+<4> Loads the entities into GORM mock datastore before each test
+
+
+If you run the Gritter server with command
+
+----
+./gradlew :server:bootRun
+----
+
+You will be able to fetch the list of statuses with cURL
+
+----
+curl http://localhost:8080/status > statuses.json
+----
+
+Save the file to convenient location and load it into your `StatusControllerSpec` using Dru. Use the loaded entities
+in a test which covers `index` controller method.
+
+TIP: You need to implement `grails.testing.gorm.DataTest` if your test wants to work with GORM entities.
+
+TIP: Ensure you have used every information from the JSON using `dru.report`. See https://agorapulse.github.io/dru/#_ignoring_properties[related section in the documentation].
+
+=== Exercise 4: Sharing Test Data
+
+____
+While you were wandering through the code of the application you have discovered method to fetch the top statuses for
+given time period inside `StatusService`. You would like to cover this method with test but you will need the data you've
+already defined in `StatusControllerSpec`.
+____
+
+==== Prepared Data Sets
+
+You can easily reuse existing data set by creating a prepared data set:
+
+[source,groovy,indent=0,options="nowrap"]
+.Prepared Data Set
+----
+static PreparedDataSet tasks = Dru.prepare {
+    from 'tasks.json', {
+        map {
+            to Task
+        }
+    }
+}
+----
+
+Later on you can use the data set inside your test class by including it:
+
+[source,groovy,indent=0,options="nowrap"]
+.Include Prepared Data Set
+----
+@Rule Dru dru = Dru.plan {
+    include OtherSpec.tasks
+}
+----
+
+Create a `StatusServiceSpec` to test `StatusService` class and let it reuse the statuses data set declared in `StatusContollerSpec`.
+Use the loaded data to test `StatusService.findTopStatuses` method.
