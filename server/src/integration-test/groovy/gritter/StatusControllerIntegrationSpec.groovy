@@ -25,20 +25,22 @@ class StatusControllerIntegrationSpec extends Specification  {
     }
     // end::header[]
 
-    void 'create status'() {
+    // tag::create-status[]
+    void 'create status'() {                                                    // <1>
         expect:
-            gru.test {
-                post '/status', {
-                    headers User: 'John Sno'
-                    json 'newStatusRequest.json'
+            gru.test {                                                          // <2>
+                post '/status', {                                               // <3>
+                    headers User: 'John Sno'                                    // <4>
+                    json 'newStatusRequest.json'                                // <5>
 
                 }
-                expect {
-                    status CREATED
-                    json 'newStatusResponse.json'
+                expect {                                                        // <6>
+                    status CREATED                                              // <7>
+                    json 'newStatusResponse.json'                               // <8>
                 }
             }
     }
+    // end::create-status[]
 
     // tag::footer[]
 }

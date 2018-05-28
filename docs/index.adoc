@@ -22,12 +22,16 @@ so you are not required to install it manually nor you don't have to be afraid o
 
 You can use IDE of your choice but https://www.jetbrains.com/idea/[IntelliJ IDEA] provides so far the best
 Gradle and Groovy integration even in the free Community version and it will be used in live coding sessions during
-the workshop.
+the workshop. Import the project as Gradle project get the best developer experience.
 
 === Getting Started
 
 To get started download link:archives/gritter.zip[exercise project archive file] and unzip it. Feel free to ignore
-the client part of the application.
+the client part of the application. Run following command to get all dependencies downloaded:
+
+```
+./gradlew dependencies
+```
 
 
 === Exercise 1: HTTP Testing
@@ -49,47 +53,71 @@ ____
 ==== Gru HTTP Testing
 
 Gru provides test support for any HTTP backend, not just Grails. We can use https://agorapulse.github.io/gru/#_http[Gru HTTP] client
-inside Grails integration test easily with following setup
+inside Grails integration test easily with following setup.
 
+To get started, create new specification class in `server/src/integration-test/groovy/gritter/StatusControllerIntegrationSpec.groovy` with following content.
 
 [source,groovy,indent=0,options="nowrap"]
-.Integration Test Example
+.Integration Specification Skeleton
 ----
 include::../server/src/integration-test/groovy/gritter/StatusControllerIntegrationSpec.groovy[tag=header]
-
-    void 'create new taks'() {
-        expect:
-        gru.test {                                                              // <5>
-                post '/task', {
-                    headers Authentication: 'Bearer TeddyTheBear'               // <6>
-                    json inline('{ "text" : "try Gru" }')                       // <7>
-                }
-                expect {
-                    status CREATED                                              // <8>
-                    json 'newTaskResponse.json'                                 // <9>
-                }
-            }
-    }
-
 include::../server/src/integration-test/groovy/gritter/StatusControllerIntegrationSpec.groovy[tag=footer]
 ----
 <1> Running integration tests requires `@Integration` annotation to be applied on the class and the file be located under `src/integration-test` folder
 <2> Application in integration test environment runs on random port which can be injected into the test
 <3> Creates new `Gru` rule with `Http` client
 <4> Sets the base URL to the address of the current application under test
-<5> Starts Gru test definition
-<6> Set the headers
-<7> JSON payload can be specified inline or as a file name
-<8> Assets that the returned status is `CREATED`
-<9> Reference file which is created automatically in `src/test/resources/**/NameOfTheSpec` directory from the actual payload if not present
 
-See https://agorapulse.github.io/gru/#_common_interactions[Common Interaction] section in the documentation for more information.
+[source,groovy,indent=0,options="nowrap"]
+.Create Status Test Method
+----
+include::../server/src/integration-test/groovy/gritter/StatusControllerIntegrationSpec.groovy[tag=create-status]
+----
+<1> Just a regular Spock feature method to test status creation
+<2> Starts Gru test definition
+<3> Tests `POST` to URI `/status`
+<4> Adds `User` header to the request
+<5> Loads the request body from file `server/src/test/resources/gritter/StatusControllerIntegrationSpec/newStatusRequest.json`
+<6> Expect clause adds verification to the test
+<7> Asserts that the returned status is `CREATED`
+<9> Reference file which is created automatically in `server/src/test/resources/gritter/StatusControllerIntegrationSpec` directory from the actual payload if not present
 
-IMPORTANT: The application uses primitive authentication. Just send plain username such as `John Sno` in `User` header.
-The user of given username must exist (see `BootStrap.groovy`).
+If you run the test for a first time, both `newStatusRequest.json` and `newStatusResponse.json` are created automatically.
 
-IMPORTANT: Some of the properties in the reference JSON file such as timestamps may be different for each request.
-Please, read https://agorapulse.github.io/gru/#_json_response[Json Response] documentation to find out how to change the generated fixture to allow variable content.
+Replace the content of `newStatusRequest.json` file with following:
+
+[source,json]
+.newStatusRequest.json
+----
+include::../server/src/test/resources/gritter/StatusControllerIntegrationSpec/newStatusRequest.json[]
+----
+
+Delete the content of `newStatusResponse.json` and run the test again. New content of `newStatusResponse.json` should get generated:
+
+[source,json]
+----
+{
+  "id": 201,
+  "created": "2018-05-28T15:08:09Z",
+  "text": "No Snow here, let's take a break!",
+  "user": {
+    "id": 1,
+    "username": "John Sno"
+  },
+  "engagementsCount": 0,
+  "engagements": []
+}
+----
+
+If you run the test again, the test will still not pass as the ids and `created` timestamp changes
+on each call. If you read  https://agorapulse.github.io/gru/#_json_response[Json Response] documentation you find out how to change the generated fixture to allow variable content.
+You can use JSON Unit placeholders.
+
+[source,json]
+.newStatusResponse.json
+----
+include::../server/src/test/resources/gritter/StatusControllerIntegrationSpec/newStatusResponse.json[]
+----
 
 === Exercise 2: Grails Controller Testing
 ____
