@@ -35,7 +35,7 @@ image::https://s3.amazonaws.com/media-p.slid.es/uploads/36318/images/4671552/Sni
 ____
 
 You have been hired by https://trafficscotland.org/wintergritterinfo/[Traffic Scotland] to finish a Grails application
-which wasn't left by a developer who was fired from the company. It's called Gritter (Grails + Twitter) and it purpose is to
+which was left by a developer who was fired from the company. It's called Gritter (Grails + Twitter) and it purpose is to
 share text statuses published by http://scotgov.maps.arcgis.com/apps/webappviewer/index.html?id=2de764a9303848ffb9a4cac0bd0b1aab[drivers of gritters].
 
 You don't want to be responsible or someone's other mess so first thing you want to do in the new job is to cover the existing
