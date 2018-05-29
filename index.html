@@ -491,14 +491,19 @@ so you are not required to install it manually nor you don&#8217;t have to be af
 <div class="paragraph">
 <p>You can use IDE of your choice but <a href="https://www.jetbrains.com/idea/">IntelliJ IDEA</a> provides so far the best
 Gradle and Groovy integration even in the free Community version and it will be used in live coding sessions during
-the workshop.</p>
+the workshop. Import the project as Gradle project get the best developer experience.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_getting_started_2">Getting Started</h3>
 <div class="paragraph">
 <p>To get started download <a href="archives/gritter.zip">exercise project archive file</a> and unzip it. Feel free to ignore
-the client part of the application.</p>
+the client part of the application. Run following command to get all dependencies downloaded:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>./gradlew dependencies</code></pre>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -512,7 +517,7 @@ the client part of the application.</p>
 <blockquote>
 <div class="paragraph">
 <p>You have been hired by <a href="https://trafficscotland.org/wintergritterinfo/">Traffic Scotland</a> to finish a Grails application
-which wasn&#8217;t left by a developer who was fired from the company. It&#8217;s called Gritter (Grails + Twitter) and it purpose is to
+which was left by a developer who was fired from the company. It&#8217;s called Gritter (Grails + Twitter) and it purpose is to
 share text statuses published by <a href="http://scotgov.maps.arcgis.com/apps/webappviewer/index.html?id=2de764a9303848ffb9a4cac0bd0b1aab">drivers of gritters</a>.</p>
 </div>
 <div class="paragraph">
@@ -520,7 +525,7 @@ share text statuses published by <a href="http://scotgov.maps.arcgis.com/apps/we
 code with tests as there are currently no tests in the project.</p>
 </div>
 <div class="paragraph">
-<p>As a first task you decided to create a integration tests which verifies that new status can be written.</p>
+<p>As a first task you decided to create a integration tests which verifies that new Gritter status can be written.</p>
 </div>
 </blockquote>
 </div>
@@ -528,10 +533,13 @@ code with tests as there are currently no tests in the project.</p>
 <h4 id="_gru_http_testing">Gru HTTP Testing</h4>
 <div class="paragraph">
 <p>Gru provides test support for any HTTP backend, not just Grails. We can use <a href="https://agorapulse.github.io/gru/#_http">Gru HTTP</a> client
-inside Grails integration test easily with following setup</p>
+inside Grails integration test easily with following setup.</p>
+</div>
+<div class="paragraph">
+<p>To get started, create new specification class in <code>server/src/integration-test/groovy/gritter/StatusControllerIntegrationSpec.groovy</code> with following content.</p>
 </div>
 <div class="listingblock">
-<div class="title">Integration Test Example</div>
+<div class="title">Integration Specification Skeleton</div>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">package gritter
 
@@ -557,21 +565,6 @@ class StatusControllerIntegrationSpec extends Specification  {
             baseUri serverUrl                                                   <i class="conum" data-value="4"></i><b>(4)</b>
         }
     }
-
-    void 'create new taks'() {
-        expect:
-        gru.test {                                                              <i class="conum" data-value="5"></i><b>(5)</b>
-                post '/task', {
-                    headers Authentication: 'Bearer TeddyTheBear'               <i class="conum" data-value="6"></i><b>(6)</b>
-                    json inline('{ "text" : "try Gru" }')                       <i class="conum" data-value="7"></i><b>(7)</b>
-                }
-                expect {
-                    status CREATED                                              <i class="conum" data-value="8"></i><b>(8)</b>
-                    json 'newTaskResponse.json'                                 <i class="conum" data-value="9"></i><b>(9)</b>
-                }
-            }
-    }
-
 }</code></pre>
 </div>
 </div>
@@ -579,7 +572,7 @@ class StatusControllerIntegrationSpec extends Specification  {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Running integration tests requires <code>@Integration</code> annotation to be applied on the class and the file be located under <code>src/integration-test</code> folder</td>
+<td>Running integration tests requires <code>@Integration</code> annotation to be applied on the class and the file be located under <code>src/integration-test</code> folder, <code>@Rollback</code> ensures that test runs inside transaction which is rolled backed after test execution.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -593,56 +586,118 @@ class StatusControllerIntegrationSpec extends Specification  {
 <td><i class="conum" data-value="4"></i><b>4</b></td>
 <td>Sets the base URL to the address of the current application under test</td>
 </tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Create Status Test Method</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">void 'create status'() {                                                    <i class="conum" data-value="1"></i><b>(1)</b>
+    expect:
+        gru.test {                                                          <i class="conum" data-value="2"></i><b>(2)</b>
+            post '/status', {                                               <i class="conum" data-value="3"></i><b>(3)</b>
+                headers User: 'John Sno'                                    <i class="conum" data-value="4"></i><b>(4)</b>
+                json 'newStatusRequest.json'                                <i class="conum" data-value="5"></i><b>(5)</b>
+
+            }
+            expect {                                                        <i class="conum" data-value="6"></i><b>(6)</b>
+                status CREATED                                              <i class="conum" data-value="7"></i><b>(7)</b>
+                json 'newStatusResponse.json'                               <i class="conum" data-value="8"></i><b>(8)</b>
+            }
+        }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
 <tr>
-<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Just a regular Spock feature method to test status creation</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>Starts Gru test definition</td>
 </tr>
 <tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Tests <code>POST</code> to URI <code>/status</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Adds <code>User</code> header to the request</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Loads the request body from file <code>server/src/test/resources/gritter/StatusControllerIntegrationSpec/newStatusRequest.json</code></td>
+</tr>
+<tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>Set the headers</td>
+<td>Expect clause adds verification to the test</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>JSON payload can be specified inline or as a file name</td>
+<td>Asserts that the returned status is <code>CREATED</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="8"></i><b>8</b></td>
-<td>Assets that the returned status is <code>CREATED</code></td>
-</tr>
-<tr>
-<td><i class="conum" data-value="9"></i><b>9</b></td>
-<td>Reference file which is created automatically in <code>src/test/resources/**/NameOfTheSpec</code> directory from the actual payload if not present</td>
+<td>Reference file which is created automatically in <code>server/src/test/resources/gritter/StatusControllerIntegrationSpec</code> directory from the actual payload if not present</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>See <a href="https://agorapulse.github.io/gru/#_common_interactions">Common Interaction</a> section in the documentation for more information.</p>
+<p>If you run the test for a first time, both <code>newStatusRequest.json</code> and <code>newStatusResponse.json</code> are created automatically.</p>
 </div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-The application uses primitive authentication. Just send plain username such as <code>John Sno</code> in <code>User</code> header.
-The user of given username must exist (see <code>BootStrap.groovy</code>).
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>Replace the content of <code>newStatusRequest.json</code> file with following:</p>
 </div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-Some of the properties in the reference JSON file such as timestamps may be different for each request.
-Please, read <a href="https://agorapulse.github.io/gru/#_json_response">Json Response</a> documentation to find out how to change the generated fixture to allow variable content.
-</td>
-</tr>
-</table>
+<div class="listingblock">
+<div class="title">newStatusRequest.json</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "text": "No Snow here, let's take a break!"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Delete the content of <code>newStatusResponse.json</code> and run the test again. New content of <code>newStatusResponse.json</code> should get generated:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "id": 201,
+  "created": "2018-05-28T15:08:09Z",
+  "text": "No Snow here, let's take a break!",
+  "user": {
+    "id": 1,
+    "username": "John Sno"
+  },
+  "engagementsCount": 0,
+  "engagements": []
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you run the test again, the test will still not pass as the ids and <code>created</code> timestamp changes
+every time. Luckily Gru integrates and extends <a href="https://github.com/lukas-krecan/JsonUnit">JsonUnit</a>.
+If you read  <a href="https://agorapulse.github.io/gru/#_json_response">Json Response</a> documentation you find out how to change the generated fixture to allow variable content.
+You can use JSON Unit placeholders. <code>${json-unit.matches:positiveIntegerString}</code> is great way how to match
+autogenerated ids. <code>${json-unit.matches:isoDateNow}</code> helps with matching timestamps which are not older than an hour.
+At the end your <code>newStatusResponse.json</code> should look like following file:</p>
+</div>
+<div class="listingblock">
+<div class="title">newStatusResponse.json</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "id": "${json-unit.matches:positiveIntegerString}",
+  "created": "${json-unit.matches:isoDateNow}",
+  "text": "No Snow here, let's take a break!",
+  "user": {
+    "id": "${json-unit.matches:positiveIntegerString}",
+    "username": "John Sno"
+  },
+  "engagementsCount": 0,
+  "engagements": []
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -659,29 +714,113 @@ as a unit test. Keep the original test for comparison. Ensure that expected cont
 </div>
 <div class="paragraph">
 <p>Unit tests no longer reside in <code>src/integration-test/groovy</code> but they are located in general <code>src/test/groovy</code> folder.
-Every Grails&#8217;s controller test must implement <code>grails.testing.web.controllers.ControllerUnitTest</code> trait. To setup <code>Gru</code>
-with <code>Grails</code> client you should supply the <code>UrlMappings</code> describing the mapped URL and any interceptor on which the controller&#8217;s logic rely.</p>
+Copy <code>server/src/integration-test/groovy/gritter/StatusControllerIntegrationSpec.groovy</code> file to
+<code>server/src/test/groovy/gritter/StatusControllerSpec.groovy</code>. Also copy content of <code>server/src/test/resources/gritter/StatusControllerIntegrationSpec</code>
+to <code>server/src/test/resources/gritter/StatusControllerSpec</code>.</p>
 </div>
 <div class="listingblock">
 <div class="title">Gru Grails Setup</div>
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">@Rule Gru gru = Gru.equip(Grails.steal(this)).prepare {
-    include UrlMappings
-    include UserInterceptor
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">package gritter
+
+import com.agorapulse.gru.Gru
+import com.agorapulse.gru.grails.Grails
+import grails.testing.gorm.DataTest
+import grails.testing.web.controllers.ControllerUnitTest
+import org.junit.Rule
+import spock.lang.Specification
+
+class StatusControllerBasicSpec extends Specification
+        implements ControllerUnitTest&lt;StatusController&gt;, DataTest {             <i class="conum" data-value="1"></i><b>(1)</b>
+
+    @Rule Gru gru = Gru.equip(Grails.steal(this)).prepare {                     <i class="conum" data-value="2"></i><b>(2)</b>
+        include UrlMappings                                                     <i class="conum" data-value="3"></i><b>(3)</b>
+        include UserInterceptor                                                 <i class="conum" data-value="4"></i><b>(4)</b>
+    }
+
+    void setup() {
+        mockDomains User, Status                                                <i class="conum" data-value="5"></i><b>(5)</b>
+    }
+
+    void 'create status'() {
+        given:
+            new User(username: 'John Sno').save(failOnError: true)              <i class="conum" data-value="6"></i><b>(6)</b>
+        expect:
+            gru.test {                                                          <i class="conum" data-value="7"></i><b>(7)</b>
+                post '/status', {
+                    headers User: 'John Sno'
+                    executes controller.&amp;save                                   <i class="conum" data-value="8"></i><b>(8)</b>
+                    json 'newStatusRequest.json'
+
+                }
+                expect {
+                    status CREATED
+                    json 'newStatusResponse.json'
+                }
+            }
+    }
+
 }</code></pre>
 </div>
 </div>
-<div class="admonitionblock tip">
+<div class="colist arabic">
 <table>
 <tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Use <code>executes</code> method inside Gru&#8217;s HTTP method call definition to verify which controller&#8217;s method has been executed.
-</td>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Grails controller tests needs to implement <code>ControllerUnitTest</code> trait, <code>DataTest</code> enables mocking domain classes</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Use Gru with Grails client</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Gru uses and verifies information from URL mapping which needs to be supplied using <code>include</code> method</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>If the controller action relies on interceptor logic, you can easily include the required interceptor</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>We need to mock domain classes which are used within the test</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Creating new status requires existing user in the database</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>The test call remains the same</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>Only difference is a call which ensures which method from the controller is called</td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>Every Grails&#8217;s controller test must implement <code>grails.testing.web.controllers.ControllerUnitTest</code> trait. To setup <code>Gru</code>
+with <code>Grails</code> client you should supply the <code>UrlMappings</code> describing the mapped URL and any interceptor on which the controller&#8217;s logic rely.</p>
+</div>
+<div class="sect3">
+<h4 id="_bonus_exercise">Bonus Exercise</h4>
+<div class="paragraph">
+<p>Write tests for other execution flows in the <code>save</code> method:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>User</code> header is missing</p>
+</li>
+<li>
+<p>User with given username does not exist</p>
+</li>
+<li>
+<p>Wrong or empty JSON payload is posted to the endpoint</p>
+</li>
+</ol>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -689,7 +828,7 @@ Use <code>executes</code> method inside Gru&#8217;s HTTP method call definition 
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
-<p>You have finished your first Gru&#8217;s controller unit test and you want to create another one for <code>index</code> action but you
+<p>You have covered <code>save</code> method in your first Gru&#8217;s controller unit test and you want to create another one for <code>index</code> action but you
 lack the required data. It looks you should be able to use Dru to preload data for the controller test to get consistent
 responses from the controller unit test.</p>
 </div>
@@ -701,38 +840,150 @@ responses from the controller unit test.</p>
 <p>Dru allows you to map existing data such as rendered JSON back to original entities. From running application you can
 easily obtain the data in JSON format using HTTP client such as <code>cURL</code> or by simply opening the endpoint URL in the browser.</p>
 </div>
+<div class="paragraph">
+<p>First run the server application in development mode:</p>
+</div>
 <div class="listingblock">
-<div class="title">item.json (from Dru documentation)</div>
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-json" data-lang="json">{
-  "id": "050e4fcf-158d-4f44-9b8b-a6ba6809982e",
-  "name": "PX-41",
-  "description": "The PX-41 is a very dangerous mutator engineered in the top secret PX-Labs, located in the Arctic Circle. It is capable of turning any living things in the world into a purple, furry, indestructible, mindless, killing machine that is so dangerous that it can destroy anything in its path.",
-  "tags": [
-    "mutator",
-    "monsters",
-    "superpowers"
-  ]
-}</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-bash" data-lang="bash">./gradlew :server:bootRun</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Once you save the JSON file in convenient location which is similar to <code>src/test/resources/package/structure/follows/NameOfTheSpec</code></p>
+<p>When the application is running you can save the JSON response for example using <code>cURL</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-bash" data-lang="bash">curl http://localhost:8080/status &gt; statuses.json</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>you are able to import the data using Dru.</p>
+<p>The content of the saved file <code>statuses.json</code> should look like following file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-json" data-lang="json">[
+  {
+    "id": 6,
+    "created": "2018-02-23T12:18:50Z",
+    "text": "Grooming snow close to Kirkintilloch",
+    "user": {
+      "id": 7,
+      "username": "Ready Spready Go"
+    },
+    "engagementsCount": 5,
+    "engagements": [
+      {
+        "id": 27,
+        "created": "2018-03-02T12:31:46Z",
+        "user": {
+          "id": 4,
+          "username": "The Snow Buster"
+        }
+      },
+      {
+        "id": 28,
+        "created": "2018-03-02T12:31:46Z",
+        "user": {
+          "id": 1,
+          "username": "John Sno"
+        }
+      },
+      {
+        "id": 29,
+        "created": "2018-03-02T12:31:46Z",
+        "user": {
+          "id": 2,
+          "username": "Ice Queen"
+        }
+      },
+      {
+        "id": 30,
+        "created": "2018-03-02T12:31:46Z",
+        "user": {
+          "id": 3,
+          "username": "Snow Destroyer"
+        }
+      },
+      {
+        "id": 31,
+        "created": "2018-03-02T12:31:46Z",
+        "user": {
+          "id": 8,
+          "username": "Gritty Gritty Bang Bang"
+        }
+      }
+    ]
+  }
+]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Move this file to <code>server/src/test/resources/gritter/StatusControllerSpec/statuses.json</code> so
+we can use it as source of data for our test.</p>
 </div>
 <div class="listingblock">
 <div class="title">Load Entities from JSON using Dru</div>
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">@Rule Dru dru = Dru.plan {                                                      <i class="conum" data-value="1"></i><b>(1)</b>
-    from ('item.json') {                                                        <i class="conum" data-value="2"></i><b>(2)</b>
-        map { to Item }                                                         <i class="conum" data-value="3"></i><b>(3)</b>
-    }
-}
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">package gritter
 
-void setup() {
-    dru.load()                                                                  <i class="conum" data-value="4"></i><b>(4)</b>
+import com.agorapulse.dru.Dru
+import com.agorapulse.gru.Gru
+import com.agorapulse.gru.grails.Grails
+import grails.testing.gorm.DataTest
+import grails.testing.web.controllers.ControllerUnitTest
+import org.junit.Rule
+import spock.lang.Specification
+
+class StatusControllerSpec extends Specification
+        implements ControllerUnitTest&lt;StatusController&gt;, DataTest {
+
+    @Rule Dru dru = Dru.plan {                                                  <i class="conum" data-value="1"></i><b>(1)</b>
+        from 'statuses.json', {                                                 <i class="conum" data-value="2"></i><b>(2)</b>
+            map {
+                to Status                                                       <i class="conum" data-value="3"></i><b>(3)</b>
+            }
+        }
+    }
+
+    void setup() {
+        dru.load()                                                              <i class="conum" data-value="4"></i><b>(4)</b>
+    }
+
+    @Rule Gru gru = Gru.equip(Grails.steal(this)).prepare {
+        include UrlMappings
+        include UserInterceptor
+    }
+
+    void 'get statuses'() {
+        expect:
+            gru.test {                                                          <i class="conum" data-value="5"></i><b>(5)</b>
+                get '/status', {
+                    params max: 10, offset: 5                                   <i class="conum" data-value="6"></i><b>(6)</b>
+                    executes  controller.&amp;index
+                }
+
+                expect {
+                    json 'statusesResponse.json'                                <i class="conum" data-value="7"></i><b>(7)</b>
+                }
+            }
+    }
+
+    void 'create status'() {                                                    <i class="conum" data-value="8"></i><b>(8)</b>
+        expect:
+            gru.test {
+                post '/status', {
+                    headers User: 'John Sno'
+                    executes controller.&amp;save
+                    json 'newStatusRequest.json'
+
+                }
+                expect {
+                    status CREATED
+                    json 'newStatusResponse.json'
+                }
+            }
+    }
+
 }</code></pre>
 </div>
 </div>
@@ -740,65 +991,46 @@ void setup() {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Create new dru instance</td>
+<td>Declare `Dru`s plan to load data</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Load data from <code>item.json</code> (e.g. <code>src/test/resources/gritter/StatusControllerSpec/item.json</code>)</td>
+<td>Load data from <code>statuses.json</code> we stored in previous step</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Map every element is mapped to given class <code>Item</code></td>
+<td>Every element in JSON array is mapped to <code>Status</code></td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Loads the entities into GORM mock datastore before each test</td>
+<td>Load the data before every test. you longer have to call <code>mockDomains</code> manually</td>
 </tr>
-</table>
-</div>
-<div class="paragraph">
-<p>If you run the Gritter server with command</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>./gradlew :server:bootRun</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You will be able to fetch the list of statuses with cURL</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>curl http://localhost:8080/status &gt; statuses.json</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Save the file to convenient location and load it into your <code>StatusControllerSpec</code> using Dru. Use the loaded entities
-in a test which covers <code>index</code> controller method.</p>
-</div>
-<div class="admonitionblock tip">
-<table>
 <tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-You need to implement <code>grails.testing.gorm.DataTest</code> if your test wants to work with GORM entities.
-</td>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Gru test for index action</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Adding the URL parameters for pagination</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>This file is generated automatically after first run, you may require to use some JsonUnit placeholders again</td>
 </tr>
 </table>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Ensure you have used every information from the JSON using <code>dru.report</code>. See <a href="https://agorapulse.github.io/dru/#_ignoring_properties">related section in the documentation</a>.
-</td>
-</tr>
-</table>
+</div>
+<div class="sect3">
+<h4 id="_bonus_exercises">Bonus Exercises</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Verify call with different parameters - <code>sort</code> and <code>order</code></p>
+</li>
+<li>
+<p>Ensure all the data (properties) from <code>statuses.json</code> are loaded using <code>dru.report</code></p>
+</li>
+</ol>
 </div>
 </div>
 </div>
@@ -852,7 +1084,7 @@ Use the loaded data to test <code>StatusService.findTopStatuses</code> method.</
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-25 18:54:28 CEST
+Last updated 2018-05-29 11:10:23 CEST
 </div>
 </div>
 </body>
