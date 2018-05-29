@@ -183,10 +183,10 @@ When the application is running you can save the JSON response for example using
 
 [source,bash,indent=0,options="nowrap"]
 ----
-curl http://localhost:8080/status > statuses.json
+curl http://localhost:8080/status?max=25 > statuses.json
 ----
 
-The content of the saved file `statuses.json` should look like following file:
+The content of the saved file `statuses.json` should look like following file but it should contain more entries:
 
 [source,json,indent=0,options="nowrap"]
 ----
@@ -255,13 +255,14 @@ we can use it as source of data for our test.
 ----
 include::../server/src/test/groovy/gritter/StatusControllerSpec.groovy[]
 ----
-<1> Declare `Dru`s plan to load data
+<1> Declare Dru plan to load data
 <2> Load data from `statuses.json` we stored in previous step
 <3> Every element in JSON array is mapped to `Status`
 <4> Load the data before every test. you longer have to call `mockDomains` manually
 <5> Gru test for index action
 <6> Adding the URL parameters for pagination
 <7> This file is generated automatically after first run, you may require to use some JsonUnit placeholders again
+<8> You don't need to create and save the user manually any longer
 
 ==== Bonus Exercises
 1. Verify call with different parameters - `sort` and `order`
@@ -277,29 +278,39 @@ ____
 
 ==== Prepared Data Sets
 
-You can easily reuse existing data set by creating a prepared data set:
+You can easily reuse existing data set by creating a prepared data set. To do this you usually create a separate class:
 
 [source,groovy,indent=0,options="nowrap"]
-.Prepared Data Set
+.StatusDataSets.groovy
 ----
-static PreparedDataSet tasks = Dru.prepare {
-    from 'tasks.json', {
-        map {
-            to Task
-        }
-    }
-}
+include::../server/src/test/groovy/gritter/StatusDataSets.groovy[]
 ----
+<1> Use `Dru.prepare` instead of `Dru.plan` if you want to create reusable data set
+
+You need to move `server/src/test/resources/gritter/StatusControllerSpec/statuses.json` to
+`server/src/test/resources/gritter/StatusDataSets/statuses.json` so it's accessible from the data set class.
+
+It is good habit to write a separate test if the data are loaded properly so other tests can rely on them:
+
+[source,groovy,indent=0,options="nowrap"]
+.StatusDataSetsSpec.groovy
+----
+include::../server/src/test/groovy/gritter/StatusDataSetsSpec.groovy[]
+----
+
+WARNING: The counts and ids will be different in your tests depending on your `status.json` file!
 
 Later on you can use the data set inside your test class by including it:
 
 [source,groovy,indent=0,options="nowrap"]
-.Include Prepared Data Set
+.StatusServiceSpec.groovy
 ----
-@Rule Dru dru = Dru.plan {
-    include OtherSpec.tasks
-}
+include::../server/src/test/groovy/gritter/StatusServiceSpec.groovy[]
 ----
 
-Create a `StatusServiceSpec` to test `StatusService` class and let it reuse the statuses data set declared in `StatusContollerSpec`.
-Use the loaded data to test `StatusService.findTopStatuses` method.
+WARNING: Expected results will be different based on content of your `status.json` file!
+
+==== Bonus Exercises
+1. Change method `findTopStatuses` to allow filter also by user
+2. Expose `findTopStatuses` method in `StatusController` at `/status/top` URL and write a `Gru`
+specification for it.

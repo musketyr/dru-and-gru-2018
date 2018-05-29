@@ -48,7 +48,7 @@ asciidoctor {
             icons: 'font',
             'toc': 'left',
             version: project.version,
-            'projectUrl': 'https://github.com/musketyr/excel-in-groovy'
+            'projectUrl': 'https://github.com/musketyr/dru-and-gru-2018'
 }
 
 githubPages {
@@ -64,7 +64,7 @@ githubPages {
     }
 }
 
-asciidoctor.dependsOn copyExercisesArchive
+asciidoctor.dependsOn copyExercisesArchive, ':server:test', ':server:integrationTest'
 publishGhPages.dependsOn asciidoctor
 
 

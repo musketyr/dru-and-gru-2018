@@ -11,7 +11,7 @@ class UserInterceptor {
         String username = request.getHeader('User')
 
         if (username) {
-            request.setAttribute('user', User.withNewSession { User.findByUsername(username) })
+            request.setAttribute('user', User.findByUsername(username))
         }
 
         return true
