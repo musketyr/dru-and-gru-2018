@@ -853,11 +853,11 @@ easily obtain the data in JSON format using HTTP client such as <code>cURL</code
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-bash" data-lang="bash">curl http://localhost:8080/status &gt; statuses.json</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-bash" data-lang="bash">curl http://localhost:8080/status?max=25 &gt; statuses.json</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The content of the saved file <code>statuses.json</code> should look like following file:</p>
+<p>The content of the saved file <code>statuses.json</code> should look like following file but it should contain more entries:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -991,7 +991,7 @@ class StatusControllerSpec extends Specification
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Declare `Dru`s plan to load data</td>
+<td>Declare Dru plan to load data</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -1016,6 +1016,10 @@ class StatusControllerSpec extends Specification
 <tr>
 <td><i class="conum" data-value="7"></i><b>7</b></td>
 <td>This file is generated automatically after first run, you may require to use some JsonUnit placeholders again</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>You don&#8217;t need to create and save the user manually any longer</td>
 </tr>
 </table>
 </div>
@@ -1048,34 +1052,172 @@ already defined in <code>StatusControllerSpec</code>.</p>
 <div class="sect3">
 <h4 id="_prepared_data_sets">Prepared Data Sets</h4>
 <div class="paragraph">
-<p>You can easily reuse existing data set by creating a prepared data set:</p>
+<p>You can easily reuse existing data set by creating a prepared data set. To do this you usually create a separate class:</p>
 </div>
 <div class="listingblock">
-<div class="title">Prepared Data Set</div>
+<div class="title">StatusDataSets.groovy</div>
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">static PreparedDataSet tasks = Dru.prepare {
-    from 'tasks.json', {
-        map {
-            to Task
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">package gritter
+
+import com.agorapulse.dru.Dru
+import com.agorapulse.dru.PreparedDataSet
+
+class StatusDataSets {
+
+    static PreparedDataSet statuses = Dru.prepare {                             <i class="conum" data-value="1"></i><b>(1)</b>
+        from 'statuses.json', {
+            map {
+                to Status
+            }
         }
     }
+
 }</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use <code>Dru.prepare</code> instead of <code>Dru.plan</code> if you want to create reusable data set</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You need to move <code>server/src/test/resources/gritter/StatusControllerSpec/statuses.json</code> to
+<code>server/src/test/resources/gritter/StatusDataSets/statuses.json</code> so it&#8217;s accessible from the data set class.</p>
+</div>
+<div class="paragraph">
+<p>It is good habit to write a separate test if the data are loaded properly so other tests can rely on them:</p>
+</div>
+<div class="listingblock">
+<div class="title">StatusDataSetsSpec.groovy</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">package gritter
+
+import com.agorapulse.dru.Dru
+import grails.testing.gorm.DataTest
+import org.junit.Rule
+import spock.lang.Specification
+
+class StatusDataSetsSpec extends Specification implements DataTest {
+
+    @Rule Dru dru = Dru.plan {
+        include StatusDataSets.statuses                                         <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+
+    void setup() {
+        dru.load()
+    }
+
+    void 'test loaded'() {
+        expect:
+            Status.list().size() == 25                                          <i class="conum" data-value="2"></i><b>(2)</b>
+            User.list().size() == 13
+            Engagement.list().size() == 133
+
+        when:
+            Status first = dru.findByTypeAndOriginalId(Status, 117)             <i class="conum" data-value="3"></i><b>(3)</b>
+        then:                                                                   <i class="conum" data-value="4"></i><b>(4)</b>
+            first.user
+            first.user.username == 'John Sno'
+            first.text == 'Spreading some salt around Airdrie'
+            first.engagements
+            first.engagements.size() == 3
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The counts and ids will be different in your tests depending on your <code>status.json</code> file!
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Later on you can use the data set inside your test class by including it:</p>
 </div>
 <div class="listingblock">
-<div class="title">Include Prepared Data Set</div>
+<div class="title">StatusServiceSpec.groovy</div>
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">@Rule Dru dru = Dru.plan {
-    include OtherSpec.tasks
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">package gritter
+
+import com.agorapulse.dru.Dru
+import grails.testing.gorm.DataTest
+import grails.testing.services.ServiceUnitTest
+import org.junit.Rule
+import spock.lang.Specification
+
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+
+class StatusServiceSpec extends Specification implements ServiceUnitTest&lt;StatusService&gt;, DataTest {
+
+    @Rule Dru dru = Dru.plan {
+        include StatusDataSets.statuses
+    }
+
+    void setup() {
+        dru.load()
+    }
+
+    void 'get top statuses'() {
+        given:
+            DateFormat format = new SimpleDateFormat('yyyy-MM-dd')
+        when:
+            List&lt;Status&gt; statuses = service.findTopStatuses(
+                    format.parse('2018-02-01'),
+                    format.parse('2019-02-01'),
+                    50
+            )
+        then:
+            statuses
+            statuses.size() == 19
+        when:
+            Status first = statuses[0]
+        then:
+            first.user
+            first.user.username == 'Sprinkles'
+            first.text == 'Refueling before leaving Larkhall'
+            first.engagements
+            first.engagements.size() == 11
+    }
+
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>Create a <code>StatusServiceSpec</code> to test <code>StatusService</code> class and let it reuse the statuses data set declared in <code>StatusContollerSpec</code>.
-Use the loaded data to test <code>StatusService.findTopStatuses</code> method.</p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Expected results will be different based on content of your <code>status.json</code> file!
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_bonus_exercises_2">Bonus Exercises</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Change method <code>findTopStatuses</code> to allow filter also by user</p>
+</li>
+<li>
+<p>Expose <code>findTopStatuses</code> method in <code>StatusController</code> at <code>/status/top</code> URL and write a <code>Gru</code>
+specification for it.</p>
+</li>
+</ol>
 </div>
 </div>
 </div>
@@ -1084,7 +1226,7 @@ Use the loaded data to test <code>StatusService.findTopStatuses</code> method.</
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-29 11:10:23 CEST
+Last updated 2018-05-29 15:18:41 CEST
 </div>
 </div>
 </body>
