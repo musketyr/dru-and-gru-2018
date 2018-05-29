@@ -33,7 +33,7 @@ class StatusController {
             return
         }
 
-        status.save flush: true
+         status.save flush: true
 
         respond status, [status: CREATED, view: 'show']
     }

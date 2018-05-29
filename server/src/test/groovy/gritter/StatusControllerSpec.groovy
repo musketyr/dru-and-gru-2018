@@ -8,60 +8,41 @@ import grails.testing.web.controllers.ControllerUnitTest
 import org.junit.Rule
 import spock.lang.Specification
 
-class StatusControllerSpec extends Specification implements ControllerUnitTest<StatusController>, DataTest {
+class StatusControllerSpec extends Specification
+        implements ControllerUnitTest<StatusController>, DataTest {
 
-    @Rule Dru dru = Dru.plan {
-        include StatusServiceSpec.statuses
+    @Rule Dru dru = Dru.plan {                                                  // <1>
+        from 'statuses.json', {                                                 // <2>
+            map {
+                to Status                                                       // <3>
+            }
+        }
     }
 
     void setup() {
-        dru.load()
+        dru.load()                                                              // <4>
     }
 
-    void 'test index'() {
-        when:
-            params.max = 10
-            params.offset = 5
-
-            def model = controller.index()
-
-        then:
-            model
-            model.statuses
-            model.statuses.size() == 10
-
-        when:
-            def status = model.statuses.first()
-        then:
-            status
-            status.user
-            status.user.username == 'Ready Spready Go'
-            status.text == 'Grooming snow close to Kirkintilloch'
-    }
-
-    // tag::gru-setup[]
     @Rule Gru gru = Gru.equip(Grails.steal(this)).prepare {
         include UrlMappings
         include UserInterceptor
     }
-    // end::gru-setup[]
-
 
     void 'get statuses'() {
         expect:
-            gru.test {
+            gru.test {                                                          // <5>
                 get '/status', {
-                    params max: 10, offset: 5
+                    params max: 10, offset: 5                                   // <6>
                     executes  controller.&index
                 }
 
                 expect {
-                    json 'statuses.json'
+                    json 'statusesResponse.json'                                // <7>
                 }
             }
     }
 
-    void 'create status'() {
+    void 'create status'() {                                                    // <8>
         expect:
             gru.test {
                 post '/status', {
