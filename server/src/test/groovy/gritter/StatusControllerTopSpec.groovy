@@ -23,10 +23,11 @@ class StatusControllerTopSpec extends Specification
         include UrlMappings
     }
 
+    // tag::top-statuses[]
     void 'top statuses'() {
         given:
-            StatusService statusService = Mock(StatusService)
-            controller.statusService = statusService
+            StatusService statusService = Mock(StatusService)                   // <1>
+            controller.statusService = statusService                            // <2>
 
             Date from = StatusController.FORMAT.parse('2018-02-01')
             Date to = StatusController.FORMAT.parse('2018-03-01')
@@ -41,10 +42,11 @@ class StatusControllerTopSpec extends Specification
                 }
             }
         then:
-            gru.verify()
-            1 * statusService.findTopStatuses(from, to, 10) >> {
+            1 * statusService.findTopStatuses(from, to, 10) >> {                // <3>
                 dru.findAllByType(Status).take(10)
             }
+            gru.verify()                                                        // <4>
     }
+    // end::top-statuses[]
 
 }
