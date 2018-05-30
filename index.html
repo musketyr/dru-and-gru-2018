@@ -443,6 +443,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_exercise_2_grails_controller_testing">Exercise 2: Grails Controller Testing</a></li>
 <li><a href="#_exercise_3_preparing_testing_data">Exercise 3: Preparing Testing Data</a></li>
 <li><a href="#_exercise_4_sharing_test_data">Exercise 4: Sharing Test Data</a></li>
+<li><a href="#_exercise_5_mocking_collaborators">Exercise 5: Mocking collaborators</a></li>
 </ul>
 </li>
 </ul>
@@ -1043,9 +1044,9 @@ class StatusControllerSpec extends Specification
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
-<p>While you were wandering through the code of the application you have discovered method to fetch the top statuses for
-given time period inside <code>StatusService</code>. You would like to cover this method with test but you will need the data you&#8217;ve
-already defined in <code>StatusControllerSpec</code>.</p>
+<p>Status controller also exposes <code>top</code> action to fetch the statuses with the biggest engagements.
+It uses <code>findTopStatuses</code> method inside <code>StatusService</code> to fetch the top statuses for given time period.
+You would like to cover this method with isolated test but you will need the data you&#8217;ve already defined in <code>StatusControllerSpec</code>.</p>
 </div>
 </blockquote>
 </div>
@@ -1206,16 +1207,98 @@ Expected results will be different based on content of your <code>status.json</c
 </table>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_exercise_5_mocking_collaborators">Exercise 5: Mocking collaborators</h3>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>You also want to test the <code>top</code> action inside <code>StatusController</code> but you want to do it in isolation.</p>
+</div>
+</blockquote>
+</div>
+<div class="sect3">
+<h4 id="_using_mocks_with_gru">Using mocks with Gru</h4>
+<div class="paragraph">
+<p>You can use mocks with Gru tests but you have to split the test declaration and verification phase. You
+can add following method in to your <code>StatusControllerSpec</code> class.</p>
+</div>
+<div class="listingblock">
+<div class="title">Using Mocks with Gru</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">void 'top statuses'() {
+    given:
+        StatusService statusService = Mock(StatusService)                   <i class="conum" data-value="1"></i><b>(1)</b>
+        controller.statusService = statusService                            <i class="conum" data-value="2"></i><b>(2)</b>
+
+        Date from = StatusController.FORMAT.parse('2018-02-01')
+        Date to = StatusController.FORMAT.parse('2018-03-01')
+    when:
+        gru.test {
+            get '/status/top', {
+                params max: 10, from: '2018-02-01', to: '2018-03-01'
+            }
+
+            expect {
+                json 'topStatusesResponse.json'
+            }
+        }
+    then:
+        1 * statusService.findTopStatuses(from, to, 10) &gt;&gt; {                <i class="conum" data-value="3"></i><b>(3)</b>
+            dru.findAllByType(Status).take(10)
+        }
+        gru.verify()                                                        <i class="conum" data-value="4"></i><b>(4)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Create a mock of <code>StatusService</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Let the controller use the mock</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>This file will be generated automatically and may need to update with some JsonUnit placeholders</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Expect a call to the mock and return some predefined data</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Call the <code>gru.verify</code> manually to verify the test call</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Don&#8217;t worry you forgot <code>gru.verify()</code> call, the framework will let you know if you do so.
+</td>
+</tr>
+</table>
+</div>
+</div>
 <div class="sect3">
 <h4 id="_bonus_exercises_2">Bonus Exercises</h4>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Change method <code>findTopStatuses</code> to allow filter also by user</p>
+<p>Add a <code>user</code> parameter to the <code>/status/top</code> endpoint and write a test for both situations when
+user is provides and when the user is missing</p>
 </li>
 <li>
-<p>Expose <code>findTopStatuses</code> method in <code>StatusController</code> at <code>/status/top</code> URL and write a <code>Gru</code>
-specification for it.</p>
+<p>Write the test for calling the <code>/status/top</code> endpoint with malformed date parameters, feel free to update
+the controller action to return meaningful response</p>
 </li>
 </ol>
 </div>
@@ -1226,7 +1309,7 @@ specification for it.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-29 15:18:41 CEST
+Last updated 2018-05-30 18:09:54 CEST
 </div>
 </div>
 </body>
