@@ -61,9 +61,11 @@ dependencies {
     testCompile "com.agorapulse:dru-client-gorm:$druVersion"
     testCompile "com.agorapulse:dru-parser-json:$druVersion"
 
-    String gruVersion = '0.4.1'
+    String gruVersion = '0.4.2'
     testCompile "com.agorapulse:gru-http:$gruVersion"
     testCompile "com.agorapulse:gru-grails:$gruVersion"
+
+    testCompile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.8.12'
 }
 
 bootRun {

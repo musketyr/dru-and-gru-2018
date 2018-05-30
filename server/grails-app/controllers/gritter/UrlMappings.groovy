@@ -3,6 +3,8 @@ package gritter
 class UrlMappings {
 
     static mappings = {
+        get "/status/top"(controller: 'status', action: 'top')
+
         delete "/$controller/$id(.$format)?"(action:"delete")
         get "/$controller(.$format)?"(action:"index")
         get "/$controller/$id(.$format)?"(action:"show")
