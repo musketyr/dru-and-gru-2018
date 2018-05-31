@@ -338,3 +338,75 @@ TIP: Don't worry you forgot `gru.verify()` call, the framework will let you know
 user is provides and when the user is missing
 2. Write the test for calling the `/status/top` endpoint with malformed date parameters, feel free to update
 the controller action to return meaningful response
+
+=== Exercise MN: Hello World
+
+You can use Dru and Gru with http://micronaut.io/[Micronaut] as well. `hello-world` directory contains
+very simple Micronaut application with one controller and one domain class
+
+==== Testing Micronuat with Gru
+
+`HelloController` always returns `Hello World` for the `GET` requests at `/hello` URL.
+
+[source,groovy,indent=0,options="nowrap"]
+.HelloController.groovy
+----
+include::../hello-world/src/main/groovy/hello/world/HelloController.groovy[]
+----
+
+You can easily specify this behaviour with Gru. Create `HelloControllerSpec` test in
+at `/hello-world/src/test/groovy/hello/world/` directory:
+
+
+[source,groovy,indent=0,options="nowrap"]
+.HelloControllerSpec.groovy
+----
+include::../hello-world/src/test/groovy/hello/world/HelloControllerSpec.groovy[]
+----
+<1> Run the embedded server for testing
+<2> Create `Gru` with `Http` client
+<3> Obtain the server URL
+<4> Set the server URL as the base URI for Gru's Http Client
+<5> Test `GET` on `/hello` endpoint
+<6> Assert that the response
+
+==== Testing Micronuat with Dru
+
+`Greetings` domain class is very simple as it only contains `language` and `greeting` properties:
+
+[source,groovy,indent=0,options="nowrap"]
+.Greetings.groovy
+----
+include::../hello-world/src/main/groovy/hello/world/Greetings.groovy[]
+----
+
+`Greetings` domain class can be accessed via GORM service `GreetingsService`.
+
+[source,groovy,indent=0,options="nowrap"]
+.GreetingsService.groovy
+----
+include::../hello-world/src/main/groovy/hello/world/GreetingsService.groovy[]
+----
+
+Dru can be used to test the GORM method as well as the GORM data services. Create `GreetingsSpec` test in
+at `/hello-world/src/test/groovy/hello/world/` directory:
+
+[source,groovy,indent=0,options="nowrap"]
+.GreetingsSpec.groovy
+----
+include::../hello-world/src/test/groovy/hello/world/GreetingsSpec.groovy[]
+----
+<1> You need to annotate the test with `@grails.gorm.transactions.Rollback` annotation so the tests are executed in a transaction which is rolled back when finished
+<2> Start the embedded server
+<3> Obtain the `GreetingsService` from the application context
+<4> You can declare a data for Dru a map which could be handy for small and simple data sets
+<5> Instead of pointing to the source file you can use name of the static property of the class as the data source
+<6> Map every item from the data source to `Greetings` domain class
+<7> Load the data before running the individual tests
+<8> Verify 3 items has been loaded by Dru
+<9> Verify item can be found using GORM static method
+<10> Verify item can be found using GORM data service
+
+==== Bonus Exercises
+1. Make `HelloController` return the greetings from the database based on the `Accept-Language` header and write a test for it
+
