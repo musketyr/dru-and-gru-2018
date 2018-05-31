@@ -24,7 +24,7 @@ You can use IDE of your choice but https://www.jetbrains.com/idea/[IntelliJ IDEA
 Gradle and Groovy integration even in the free Community version and it will be used in live coding sessions during
 the workshop. Import the project as Gradle project get the best developer experience.
 
-=== Getting Started
+=== Project Archive
 
 To get started download link:archives/gritter.zip[exercise project archive file] and unzip it. Feel free to ignore
 the client part of the application. Run following command to get all dependencies downloaded:
@@ -34,7 +34,7 @@ the client part of the application. Run following command to get all dependencie
 ```
 
 
-=== Exercise 1: HTTP Testing
+== Exercise 1: HTTP Testing
 
 image::https://s3.amazonaws.com/media-p.slid.es/uploads/36318/images/4671552/Sni%CC%81mek_obrazovky_2018-03-06_v_9.13.01.png[Gritter App]
 ____
@@ -50,7 +50,7 @@ As a first task you decided to create a integration tests which verifies that ne
 ____
 
 
-==== Gru HTTP Testing
+=== Gru HTTP Testing
 
 Gru provides test support for any HTTP backend, not just Grails. We can use https://agorapulse.github.io/gru/#_http[Gru HTTP] client
 inside Grails integration test easily with following setup.
@@ -122,7 +122,7 @@ At the end your `newStatusResponse.json` should look like following file:
 include::../server/src/test/resources/gritter/StatusControllerIntegrationSpec/newStatusResponse.json[]
 ----
 
-=== Exercise 2: Grails Controller Testing
+== Exercise 2: Grails Controller Testing
 ____
 You have created your first integration test but you are not happy. You were taught that integration tests are
 unnecessarily slow and you should try to write unit test whereever it is possible. Try to rewrite the create status test
@@ -151,7 +151,7 @@ include::../server/src/test/groovy/gritter/StatusControllerBasicSpec.groovy[]
 Every Grails's controller test must implement `grails.testing.web.controllers.ControllerUnitTest` trait. To setup `Gru`
 with `Grails` client you should supply the `UrlMappings` describing the mapped URL and any interceptor on which the controller's logic rely.
 
-==== Bonus Exercise
+=== Bonus Exercise
 
 Write tests for other execution flows in the `save` method:
 
@@ -159,7 +159,7 @@ Write tests for other execution flows in the `save` method:
 2. User with given username does not exist
 3. Wrong or empty JSON payload is posted to the endpoint
 
-=== Exercise 3: Preparing Testing Data
+== Exercise 3: Preparing Testing Data
 
 ____
 You have covered `save` method in your first Gru's controller unit test and you want to create another one for `index` action but you
@@ -167,7 +167,7 @@ lack the required data. It looks you should be able to use Dru to preload data f
 responses from the controller unit test.
 ____
 
-==== Using Dru to Preload Data
+=== Using Dru to Preload Data
 
 Dru allows you to map existing data such as rendered JSON back to original entities. From running application you can
 easily obtain the data in JSON format using HTTP client such as `cURL` or by simply opening the endpoint URL in the browser.
@@ -264,11 +264,11 @@ include::../server/src/test/groovy/gritter/StatusControllerSpec.groovy[]
 <7> This file is generated automatically after first run, you may require to use some JsonUnit placeholders again
 <8> You don't need to create and save the user manually any longer
 
-==== Bonus Exercises
+=== Bonus Exercises
 1. Verify call with different parameters - `sort` and `order`
 2. Ensure all the data (properties) from `statuses.json` are loaded using `dru.report`
 
-=== Exercise 4: Sharing Test Data
+== Exercise 4: Sharing Test Data
 
 ____
 Status controller also exposes `top` action to fetch the statuses with the biggest engagements.
@@ -276,7 +276,7 @@ It uses `findTopStatuses` method inside `StatusService` to fetch the top statuse
 You would like to cover this method with isolated test but you will need the data you've already defined in `StatusControllerSpec`.
 ____
 
-==== Prepared Data Sets
+=== Prepared Data Sets
 
 You can easily reuse existing data set by creating a prepared data set. To do this you usually create a separate class:
 
@@ -310,12 +310,12 @@ include::../server/src/test/groovy/gritter/StatusServiceSpec.groovy[]
 
 WARNING: Expected results will be different based on content of your `status.json` file!
 
-=== Exercise 5: Mocking collaborators
+== Exercise 5: Mocking collaborators
 ____
 You also want to test the `top` action inside `StatusController` but you want to do it in isolation.
 ____
 
-==== Using mocks with Gru
+=== Using mocks with Gru
 
 You can use mocks with Gru tests but you have to split the test declaration and verification phase. You
 can add following method in to your `StatusControllerSpec` class.
@@ -333,18 +333,18 @@ include::../server/src/test/groovy/gritter/StatusControllerTopSpec.groovy[tag=to
 
 TIP: Don't worry you forgot `gru.verify()` call, the framework will let you know if you do so.
 
-==== Bonus Exercises
+=== Bonus Exercises
 1. Add a `user` parameter to the `/status/top` endpoint and write a test for both situations when
 user is provides and when the user is missing
 2. Write the test for calling the `/status/top` endpoint with malformed date parameters, feel free to update
 the controller action to return meaningful response
 
-=== Exercise MN: Hello World
+== Exercise MN: Hello World
 
 You can use Dru and Gru with http://micronaut.io/[Micronaut] as well. `hello-world` directory contains
 very simple Micronaut application with one controller and one domain class
 
-==== Testing Micronuat with Gru
+=== Testing Micronuat with Gru
 
 `HelloController` always returns `Hello World` for the `GET` requests at `/hello` URL.
 
@@ -370,7 +370,7 @@ include::../hello-world/src/test/groovy/hello/world/HelloControllerSpec.groovy[]
 <5> Test `GET` on `/hello` endpoint
 <6> Assert that the response
 
-==== Testing Micronuat with Dru
+=== Testing Micronuat with Dru
 
 `Greetings` domain class is very simple as it only contains `language` and `greeting` properties:
 
@@ -407,6 +407,6 @@ include::../hello-world/src/test/groovy/hello/world/GreetingsSpec.groovy[]
 <9> Verify item can be found using GORM static method
 <10> Verify item can be found using GORM data service
 
-==== Bonus Exercises
+=== Bonus Exercises
 1. Make `HelloController` return the greetings from the database based on the `Accept-Language` header and write a test for it
 
