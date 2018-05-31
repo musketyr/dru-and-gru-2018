@@ -23,9 +23,9 @@ apply plugin:"groovy"
 
 
 repositories {
-    mavenLocal()
     mavenCentral()
     maven { url "https://jcenter.bintray.com" }
+    maven { url "https://repo.grails.org/grails/core" }
 }
 
 dependencyManagement {
@@ -55,10 +55,9 @@ dependencies {
     testCompile "junit:junit:4.12"
     testCompile "io.micronaut:inject-java"
 
-//    String druVersion = '0.3.1'
-//    testCompile "com.agorapulse:dru:$druVersion"
-//    testCompile "com.agorapulse:dru-client-gorm:$druVersion"
-//    testCompile "com.agorapulse:dru-parser-json:$druVersion"
+    String druVersion = '0.3.1'
+    testCompile "com.agorapulse:dru:$druVersion"
+    testCompile "com.agorapulse:dru-client-gorm:$druVersion"
 
     String gruVersion = '0.5.0'
     testCompile "com.agorapulse:gru-http:$gruVersion"
