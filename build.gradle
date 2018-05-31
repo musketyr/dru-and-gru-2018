@@ -20,6 +20,7 @@ task exercisesArchive(type: Zip) {
         exclude 'docs'
         exclude '.gitignore'
         exclude 'README.adoc'
+        exclude 'hello-world/src/test'
         exclude 'server/src/test'
         exclude 'server/src/integration-test'
     }
