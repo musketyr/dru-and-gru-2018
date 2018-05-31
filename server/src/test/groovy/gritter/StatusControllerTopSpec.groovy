@@ -38,14 +38,14 @@ class StatusControllerTopSpec extends Specification
                 }
 
                 expect {
-                    json 'topStatusesResponse.json'
+                    json 'topStatusesResponse.json'                             // <3>
                 }
             }
         then:
-            1 * statusService.findTopStatuses(from, to, 10) >> {                // <3>
+            1 * statusService.findTopStatuses(from, to, 10) >> {                // <4>
                 dru.findAllByType(Status).take(10)
             }
-            gru.verify()                                                        // <4>
+            gru.verify()                                                        // <5>
     }
     // end::top-statuses[]
 

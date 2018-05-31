@@ -80,7 +80,7 @@ include::../server/src/integration-test/groovy/gritter/StatusControllerIntegrati
 <5> Loads the request body from file `server/src/test/resources/gritter/StatusControllerIntegrationSpec/newStatusRequest.json`
 <6> Expect clause adds verification to the test
 <7> Asserts that the returned status is `CREATED`
-<9> Reference file which is created automatically in `server/src/test/resources/gritter/StatusControllerIntegrationSpec` directory from the actual payload if not present
+<8> Reference file which is created automatically in `server/src/test/resources/gritter/StatusControllerIntegrationSpec` directory from the actual payload if not present
 
 If you run the test for a first time, both `newStatusRequest.json` and `newStatusResponse.json` are created automatically.
 
