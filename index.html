@@ -438,13 +438,41 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_getting_started">Getting Started</a>
 <ul class="sectlevel2">
 <li><a href="#_software_requirements">Software Requirements</a></li>
-<li><a href="#_getting_started_2">Getting Started</a></li>
-<li><a href="#_exercise_1_http_testing">Exercise 1: HTTP Testing</a></li>
-<li><a href="#_exercise_2_grails_controller_testing">Exercise 2: Grails Controller Testing</a></li>
-<li><a href="#_exercise_3_preparing_testing_data">Exercise 3: Preparing Testing Data</a></li>
-<li><a href="#_exercise_4_sharing_test_data">Exercise 4: Sharing Test Data</a></li>
-<li><a href="#_exercise_5_mocking_collaborators">Exercise 5: Mocking collaborators</a></li>
-<li><a href="#_exercise_mn_hello_world">Exercise MN: Hello World</a></li>
+<li><a href="#_project_archive">Project Archive</a></li>
+</ul>
+</li>
+<li><a href="#_exercise_1_http_testing">Exercise 1: HTTP Testing</a>
+<ul class="sectlevel2">
+<li><a href="#_gru_http_testing">Gru HTTP Testing</a></li>
+</ul>
+</li>
+<li><a href="#_exercise_2_grails_controller_testing">Exercise 2: Grails Controller Testing</a>
+<ul class="sectlevel2">
+<li><a href="#_bonus_exercise">Bonus Exercise</a></li>
+</ul>
+</li>
+<li><a href="#_exercise_3_preparing_testing_data">Exercise 3: Preparing Testing Data</a>
+<ul class="sectlevel2">
+<li><a href="#_using_dru_to_preload_data">Using Dru to Preload Data</a></li>
+<li><a href="#_bonus_exercises">Bonus Exercises</a></li>
+</ul>
+</li>
+<li><a href="#_exercise_4_sharing_test_data">Exercise 4: Sharing Test Data</a>
+<ul class="sectlevel2">
+<li><a href="#_prepared_data_sets">Prepared Data Sets</a></li>
+</ul>
+</li>
+<li><a href="#_exercise_5_mocking_collaborators">Exercise 5: Mocking collaborators</a>
+<ul class="sectlevel2">
+<li><a href="#_using_mocks_with_gru">Using mocks with Gru</a></li>
+<li><a href="#_bonus_exercises_2">Bonus Exercises</a></li>
+</ul>
+</li>
+<li><a href="#_exercise_mn_hello_world">Exercise MN: Hello World</a>
+<ul class="sectlevel2">
+<li><a href="#_testing_micronuat_with_gru">Testing Micronuat with Gru</a></li>
+<li><a href="#_testing_micronuat_with_dru">Testing Micronuat with Dru</a></li>
+<li><a href="#_bonus_exercises_3">Bonus Exercises</a></li>
 </ul>
 </li>
 </ul>
@@ -497,7 +525,7 @@ the workshop. Import the project as Gradle project get the best developer experi
 </div>
 </div>
 <div class="sect2">
-<h3 id="_getting_started_2">Getting Started</h3>
+<h3 id="_project_archive">Project Archive</h3>
 <div class="paragraph">
 <p>To get started download <a href="archives/gritter.zip">exercise project archive file</a> and unzip it. Feel free to ignore
 the client part of the application. Run following command to get all dependencies downloaded:</p>
@@ -508,8 +536,11 @@ the client part of the application. Run following command to get all dependencie
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_exercise_1_http_testing">Exercise 1: HTTP Testing</h3>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_exercise_1_http_testing">Exercise 1: HTTP Testing</h2>
+<div class="sectionbody">
 <div class="imageblock">
 <div class="content">
 <img src="https://s3.amazonaws.com/media-p.slid.es/uploads/36318/images/4671552/Sni%CC%81mek_obrazovky_2018-03-06_v_9.13.01.png" alt="Gritter App">
@@ -531,8 +562,8 @@ code with tests as there are currently no tests in the project.</p>
 </div>
 </blockquote>
 </div>
-<div class="sect3">
-<h4 id="_gru_http_testing">Gru HTTP Testing</h4>
+<div class="sect2">
+<h3 id="_gru_http_testing">Gru HTTP Testing</h3>
 <div class="paragraph">
 <p>Gru provides test support for any HTTP backend, not just Grails. We can use <a href="https://agorapulse.github.io/gru/#_http">Gru HTTP</a> client
 inside Grails integration test easily with following setup.</p>
@@ -703,8 +734,10 @@ At the end your <code>newStatusResponse.json</code> should look like following f
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_exercise_2_grails_controller_testing">Exercise 2: Grails Controller Testing</h3>
+</div>
+<div class="sect1">
+<h2 id="_exercise_2_grails_controller_testing">Exercise 2: Grails Controller Testing</h2>
+<div class="sectionbody">
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
@@ -805,8 +838,8 @@ class StatusControllerBasicSpec extends Specification
 <p>Every Grails&#8217;s controller test must implement <code>grails.testing.web.controllers.ControllerUnitTest</code> trait. To setup <code>Gru</code>
 with <code>Grails</code> client you should supply the <code>UrlMappings</code> describing the mapped URL and any interceptor on which the controller&#8217;s logic rely.</p>
 </div>
-<div class="sect3">
-<h4 id="_bonus_exercise">Bonus Exercise</h4>
+<div class="sect2">
+<h3 id="_bonus_exercise">Bonus Exercise</h3>
 <div class="paragraph">
 <p>Write tests for other execution flows in the <code>save</code> method:</p>
 </div>
@@ -825,8 +858,10 @@ with <code>Grails</code> client you should supply the <code>UrlMappings</code> d
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_exercise_3_preparing_testing_data">Exercise 3: Preparing Testing Data</h3>
+</div>
+<div class="sect1">
+<h2 id="_exercise_3_preparing_testing_data">Exercise 3: Preparing Testing Data</h2>
+<div class="sectionbody">
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
@@ -836,8 +871,8 @@ responses from the controller unit test.</p>
 </div>
 </blockquote>
 </div>
-<div class="sect3">
-<h4 id="_using_dru_to_preload_data">Using Dru to Preload Data</h4>
+<div class="sect2">
+<h3 id="_using_dru_to_preload_data">Using Dru to Preload Data</h3>
 <div class="paragraph">
 <p>Dru allows you to map existing data such as rendered JSON back to original entities. From running application you can
 easily obtain the data in JSON format using HTTP client such as <code>cURL</code> or by simply opening the endpoint URL in the browser.</p>
@@ -1026,8 +1061,8 @@ class StatusControllerSpec extends Specification
 </table>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_bonus_exercises">Bonus Exercises</h4>
+<div class="sect2">
+<h3 id="_bonus_exercises">Bonus Exercises</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -1040,8 +1075,10 @@ class StatusControllerSpec extends Specification
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_exercise_4_sharing_test_data">Exercise 4: Sharing Test Data</h3>
+</div>
+<div class="sect1">
+<h2 id="_exercise_4_sharing_test_data">Exercise 4: Sharing Test Data</h2>
+<div class="sectionbody">
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
@@ -1051,8 +1088,8 @@ You would like to cover this method with isolated test but you will need the dat
 </div>
 </blockquote>
 </div>
-<div class="sect3">
-<h4 id="_prepared_data_sets">Prepared Data Sets</h4>
+<div class="sect2">
+<h3 id="_prepared_data_sets">Prepared Data Sets</h3>
 <div class="paragraph">
 <p>You can easily reuse existing data set by creating a prepared data set. To do this you usually create a separate class:</p>
 </div>
@@ -1209,8 +1246,10 @@ Expected results will be different based on content of your <code>status.json</c
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_exercise_5_mocking_collaborators">Exercise 5: Mocking collaborators</h3>
+</div>
+<div class="sect1">
+<h2 id="_exercise_5_mocking_collaborators">Exercise 5: Mocking collaborators</h2>
+<div class="sectionbody">
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
@@ -1218,8 +1257,8 @@ Expected results will be different based on content of your <code>status.json</c
 </div>
 </blockquote>
 </div>
-<div class="sect3">
-<h4 id="_using_mocks_with_gru">Using mocks with Gru</h4>
+<div class="sect2">
+<h3 id="_using_mocks_with_gru">Using mocks with Gru</h3>
 <div class="paragraph">
 <p>You can use mocks with Gru tests but you have to split the test declaration and verification phase. You
 can add following method in to your <code>StatusControllerSpec</code> class.</p>
@@ -1289,8 +1328,8 @@ Don&#8217;t worry you forgot <code>gru.verify()</code> call, the framework will 
 </table>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_bonus_exercises_2">Bonus Exercises</h4>
+<div class="sect2">
+<h3 id="_bonus_exercises_2">Bonus Exercises</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -1305,14 +1344,16 @@ the controller action to return meaningful response</p>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_exercise_mn_hello_world">Exercise MN: Hello World</h3>
+</div>
+<div class="sect1">
+<h2 id="_exercise_mn_hello_world">Exercise MN: Hello World</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>You can use Dru and Gru with <a href="http://micronaut.io/">Micronaut</a> as well. <code>hello-world</code> directory contains
 very simple Micronaut application with one controller and one domain class</p>
 </div>
-<div class="sect3">
-<h4 id="_testing_micronuat_with_gru">Testing Micronuat with Gru</h4>
+<div class="sect2">
+<h3 id="_testing_micronuat_with_gru">Testing Micronuat with Gru</h3>
 <div class="paragraph">
 <p><code>HelloController</code> always returns <code>Hello World</code> for the <code>GET</code> requests at <code>/hello</code> URL.</p>
 </div>
@@ -1408,8 +1449,8 @@ class HelloControllerSpec extends Specification {
 </table>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_testing_micronuat_with_dru">Testing Micronuat with Dru</h4>
+<div class="sect2">
+<h3 id="_testing_micronuat_with_dru">Testing Micronuat with Dru</h3>
 <div class="paragraph">
 <p><code>Greetings</code> domain class is very simple as it only contains <code>language</code> and <code>greeting</code> properties:</p>
 </div>
@@ -1557,8 +1598,8 @@ class GreetingsSpec extends Specification {
 </table>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_bonus_exercises_3">Bonus Exercises</h4>
+<div class="sect2">
+<h3 id="_bonus_exercises_3">Bonus Exercises</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -1570,10 +1611,9 @@ class GreetingsSpec extends Specification {
 </div>
 </div>
 </div>
-</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-31 06:45:55 CEST
+Last updated 2018-05-31 07:15:20 CEST
 </div>
 </div>
 </body>
