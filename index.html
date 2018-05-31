@@ -1241,14 +1241,14 @@ can add following method in to your <code>StatusControllerSpec</code> class.</p>
             }
 
             expect {
-                json 'topStatusesResponse.json'
+                json 'topStatusesResponse.json'                             <i class="conum" data-value="3"></i><b>(3)</b>
             }
         }
     then:
-        1 * statusService.findTopStatuses(from, to, 10) &gt;&gt; {                <i class="conum" data-value="3"></i><b>(3)</b>
+        1 * statusService.findTopStatuses(from, to, 10) &gt;&gt; {                <i class="conum" data-value="4"></i><b>(4)</b>
             dru.findAllByType(Status).take(10)
         }
-        gru.verify()                                                        <i class="conum" data-value="4"></i><b>(4)</b>
+        gru.verify()                                                        <i class="conum" data-value="5"></i><b>(5)</b>
 }</code></pre>
 </div>
 </div>
@@ -1573,7 +1573,7 @@ class GreetingsSpec extends Specification {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-31 06:41:23 CEST
+Last updated 2018-05-31 06:45:55 CEST
 </div>
 </div>
 </body>
