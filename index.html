@@ -444,6 +444,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_exercise_3_preparing_testing_data">Exercise 3: Preparing Testing Data</a></li>
 <li><a href="#_exercise_4_sharing_test_data">Exercise 4: Sharing Test Data</a></li>
 <li><a href="#_exercise_5_mocking_collaborators">Exercise 5: Mocking collaborators</a></li>
+<li><a href="#_exercise_mn_hello_world">Exercise MN: Hello World</a></li>
 </ul>
 </li>
 </ul>
@@ -1304,12 +1305,275 @@ the controller action to return meaningful response</p>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_exercise_mn_hello_world">Exercise MN: Hello World</h3>
+<div class="paragraph">
+<p>You can use Dru and Gru with <a href="http://micronaut.io/">Micronaut</a> as well. <code>hello-world</code> directory contains
+very simple Micronaut application with one controller and one domain class</p>
+</div>
+<div class="sect3">
+<h4 id="_testing_micronuat_with_gru">Testing Micronuat with Gru</h4>
+<div class="paragraph">
+<p><code>HelloController</code> always returns <code>Hello World</code> for the <code>GET</code> requests at <code>/hello</code> URL.</p>
+</div>
+<div class="listingblock">
+<div class="title">HelloController.groovy</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">package hello.world
+
+import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Get
+
+
+@Controller("/hello")
+class HelloController {
+
+    @Get("/")
+    String index() {
+        return "Hello World"
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can easily specify this behaviour with Gru. Create <code>HelloControllerSpec</code> test in
+at <code>/hello-world/src/test/groovy/hello/world/</code> directory:</p>
+</div>
+<div class="listingblock">
+<div class="title">HelloControllerSpec.groovy</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">package hello.world
+
+import com.agorapulse.gru.Gru
+import com.agorapulse.gru.http.Http
+import io.micronaut.context.ApplicationContext
+import io.micronaut.runtime.server.EmbeddedServer
+import org.junit.Rule
+import spock.lang.AutoCleanup
+import spock.lang.Shared
+import spock.lang.Specification
+
+class HelloControllerSpec extends Specification {
+
+    @Shared @AutoCleanup
+    EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer)      <i class="conum" data-value="1"></i><b>(1)</b>
+
+    @Rule Gru gru = Gru.equip(Http.steal(this))                                 <i class="conum" data-value="2"></i><b>(2)</b>
+
+    void setup() {
+        String serverUrl = embeddedServer.getURL()                              <i class="conum" data-value="3"></i><b>(3)</b>
+        gru.prepare {
+            baseUri serverUrl                                                   <i class="conum" data-value="4"></i><b>(4)</b>
+        }
+    }
+
+    void "test index"() {
+        expect:
+            gru.test {
+                get '/hello'                                                    <i class="conum" data-value="5"></i><b>(5)</b>
+                expect {
+                    text inline('Hello World')                                  <i class="conum" data-value="6"></i><b>(6)</b>
+                }
+            }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Run the embedded server for testing</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Create <code>Gru</code> with <code>Http</code> client</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Obtain the server URL</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Set the server URL as the base URI for Gru&#8217;s Http Client</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Test <code>GET</code> on <code>/hello</code> endpoint</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Assert that the response</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_testing_micronuat_with_dru">Testing Micronuat with Dru</h4>
+<div class="paragraph">
+<p><code>Greetings</code> domain class is very simple as it only contains <code>language</code> and <code>greeting</code> properties:</p>
+</div>
+<div class="listingblock">
+<div class="title">Greetings.groovy</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">package hello.world
+
+import grails.gorm.annotation.Entity
+
+@Entity
+class Greetings {
+
+    String language
+    String greeting
+
+    static constraints = {
+        language minSize: 2, maxSize: 2
+        greeting size: 1..255
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>Greetings</code> domain class can be accessed via GORM service <code>GreetingsService</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">GreetingsService.groovy</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">package hello.world
+
+import grails.gorm.services.Service
+
+
+@Service(Greetings)
+interface GreetingsService {
+
+    Greetings findByLanguage(String language)
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Dru can be used to test the GORM method as well as the GORM data services. Create <code>GreetingsSpec</code> test in
+at <code>/hello-world/src/test/groovy/hello/world/</code> directory:</p>
+</div>
+<div class="listingblock">
+<div class="title">GreetingsSpec.groovy</div>
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-groovy" data-lang="groovy">package hello.world
+
+import com.agorapulse.dru.Dru
+import grails.gorm.transactions.Rollback
+import io.micronaut.context.ApplicationContext
+import io.micronaut.runtime.server.EmbeddedServer
+import org.junit.Rule
+import spock.lang.AutoCleanup
+import spock.lang.Shared
+import spock.lang.Specification
+
+@Rollback                                                                       <i class="conum" data-value="1"></i><b>(1)</b>
+class GreetingsSpec extends Specification {
+
+    @Shared @AutoCleanup
+
+    EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer)      <i class="conum" data-value="2"></i><b>(2)</b>
+
+    @Shared GreetingsService service = embeddedServer.applicationContext
+                                                     .getBean(GreetingsService) <i class="conum" data-value="3"></i><b>(3)</b>
+
+    private static final List&lt;Map&lt;String, String&gt;&gt; GREETINGS = [                <i class="conum" data-value="4"></i><b>(4)</b>
+            [language: 'dk', greeting: 'Hej Verden!'],
+            [language: 'en', greeting: 'Hello World!'],
+            [language: 'es', greeting: 'Hola Mundo!'],
+    ]
+
+    @Rule Dru dru = Dru.plan {
+        from 'GREETINGS', {                                                     <i class="conum" data-value="5"></i><b>(5)</b>
+            map {
+                to Greetings                                                    <i class="conum" data-value="6"></i><b>(6)</b>
+            }
+        }
+    }
+
+    void setup() {
+        dru.load()                                                              <i class="conum" data-value="7"></i><b>(7)</b>
+    }
+
+    void 'load with dru and fetch by gorm method'() {
+        expect:
+            dru.findAllByType(Greetings).size() == 3                            <i class="conum" data-value="8"></i><b>(8)</b>
+            Greetings.findByLanguage('dk')                                      <i class="conum" data-value="9"></i><b>(9)</b>
+    }
+
+    void 'load with dru and fetch by gorm service'() {
+        expect:
+            dru.findAllByType(Greetings).size() == 3
+            service.findByLanguage('dk')                                        <i class="conum" data-value="10"></i><b>(10)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>You need to annotate the test with <code>@grails.gorm.transactions.Rollback</code> annotation so the tests are executed in a transaction which is rolled back when finished</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Start the embedded server</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Obtain the <code>GreetingsService</code> from the application context</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>You can declare a data for Dru a map which could be handy for small and simple data sets</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Instead of pointing to the source file you can use name of the static property of the class as the data source</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Map every item from the data source to <code>Greetings</code> domain class</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Load the data before running the individual tests</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>Verify 3 items has been loaded by Dru</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td>Verify item can be found using GORM static method</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="10"></i><b>10</b></td>
+<td>Verify item can be found using GORM data service</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_bonus_exercises_3">Bonus Exercises</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Make <code>HelloController</code> return the greetings from the database based on the <code>Accept-Language</code> header and write a test for it</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-30 18:09:54 CEST
+Last updated 2018-05-31 06:41:23 CEST
 </div>
 </div>
 </body>
