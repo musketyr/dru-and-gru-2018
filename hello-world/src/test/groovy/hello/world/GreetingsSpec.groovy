@@ -28,18 +28,18 @@ class GreetingsSpec extends Specification {
         }
     }
 
+    void setup() {
+        dru.load()
+    }
+
     void 'load with dru and fetch by gorm method'() {
-        when:
-            dru.load()
-        then:
+        expect:
             dru.findAllByType(Greetings).size() == 2
             Greetings.findByLanguage('cs')
     }
 
     void 'load with dru and fetch by gorm service'() {
-        when:
-            dru.load()
-        then:
+        expect:
             dru.findAllByType(Greetings).size() == 2
             service.findByLanguage('cs')
     }
