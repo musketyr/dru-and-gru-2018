@@ -1,2 +1,2 @@
-include 'client', 'server'
+include 'client', 'server', 'hello-world'
 rootProject.name = 'gritter'
