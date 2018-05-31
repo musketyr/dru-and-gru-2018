@@ -18,6 +18,7 @@ task exercisesArchive(type: Zip) {
         exclude '**/build'
         exclude '**/node_modules'
         exclude 'docs'
+        exclude 'hello-world'
         exclude '.gitignore'
         exclude 'README.adoc'
         exclude 'server/src/test'
@@ -64,7 +65,7 @@ githubPages {
     }
 }
 
-asciidoctor.dependsOn copyExercisesArchive, ':server:test', ':server:integrationTest'
+asciidoctor.dependsOn copyExercisesArchive, ':server:test', ':server:integrationTest', ':hello-world:test'
 publishGhPages.dependsOn asciidoctor
 
 
