@@ -70,3 +70,7 @@ shadowJar {
 mainClassName = "hello.world.Application"
 compileJava.options.compilerArgs += '-parameters'
 compileTestJava.options.compilerArgs += '-parameters'
+
+test {
+    systemProperties TEST_RESOURCES_FOLDER: file('src/test/resources').canonicalPath.toString()
+}

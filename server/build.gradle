@@ -70,3 +70,11 @@ bootRun {
     jvmArgs('-Dspring.output.ansi.enabled=always')
     addResources = true
 }
+
+test {
+    systemProperties TEST_RESOURCES_FOLDER: file('src/test/resources').canonicalPath.toString()
+}
+
+integrationTest {
+    systemProperties TEST_RESOURCES_FOLDER: file('src/test/resources').canonicalPath.toString()
+}
